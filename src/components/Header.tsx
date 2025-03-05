@@ -1,8 +1,9 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Clock, Calendar, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
 
 interface HeaderProps {
   logoUrl?: string;
@@ -15,6 +16,37 @@ const Header: React.FC<HeaderProps> = ({
   businessName, 
   isBusinessPage = false 
 }) => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleScheduleAppointment = () => {
+    toast({
+      title: "Agendar Cita",
+      description: "Funcionalidad de agendar cita activada",
+    });
+  };
+
+  const handleViewTurns = () => {
+    toast({
+      title: "Mis Turnos",
+      description: "Visualizando tus turnos actuales",
+    });
+  };
+
+  const handleShowHowItWorks = () => {
+    toast({
+      title: "Cómo Funciona",
+      description: "Mostrando guía de funcionamiento de SinFilas",
+    });
+  };
+
+  const handleMobileMenu = () => {
+    toast({
+      title: "Menú Móvil",
+      description: "Abriendo menú de navegación",
+    });
+  };
+
   return (
     <header className="w-full sticky top-0 z-50 glassmorphism animate-blur-in">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -43,11 +75,19 @@ const Header: React.FC<HeaderProps> = ({
             <div className="flex items-center space-x-4">
               {isBusinessPage ? (
                 <>
-                  <Button variant="ghost" className="flex items-center space-x-2">
+                  <Button 
+                    variant="ghost" 
+                    className="flex items-center space-x-2"
+                    onClick={handleScheduleAppointment}
+                  >
                     <Calendar className="h-4 w-4" />
                     <span>Agendar Cita</span>
                   </Button>
-                  <Button variant="ghost" className="flex items-center space-x-2">
+                  <Button 
+                    variant="ghost" 
+                    className="flex items-center space-x-2"
+                    onClick={handleViewTurns}
+                  >
                     <Clock className="h-4 w-4" />
                     <span>Mis Turnos</span>
                   </Button>
@@ -57,7 +97,12 @@ const Header: React.FC<HeaderProps> = ({
                   <Button variant="ghost">
                     <Link to="/business">Para Negocios</Link>
                   </Button>
-                  <Button variant="ghost">Cómo Funciona</Button>
+                  <Button 
+                    variant="ghost"
+                    onClick={handleShowHowItWorks}
+                  >
+                    Cómo Funciona
+                  </Button>
                   <Button variant="ghost">
                     <Link to="/contact">Contacto</Link>
                   </Button>
@@ -70,7 +115,11 @@ const Header: React.FC<HeaderProps> = ({
           </div>
           
           <div className="md:hidden">
-            <Button variant="ghost" size="icon">
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={handleMobileMenu}
+            >
               <Menu className="h-6 w-6" />
             </Button>
           </div>

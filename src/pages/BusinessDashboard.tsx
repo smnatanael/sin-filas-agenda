@@ -1,5 +1,5 @@
-
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,7 +11,10 @@ import { useToast } from '@/hooks/use-toast';
 
 const BusinessDashboard: React.FC = () => {
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("perfil");
+  const [activeSidebarItem, setActiveSidebarItem] = useState("dashboard");
   const { toast } = useToast();
+  const navigate = useNavigate();
   
   const handleSaveChanges = () => {
     setLoading(true);
@@ -25,6 +28,32 @@ const BusinessDashboard: React.FC = () => {
       });
     }, 1000);
   };
+
+  const handleSidebarClick = (item: string) => {
+    setActiveSidebarItem(item);
+    
+    // If the item needs to navigate to a different page
+    if (item === 'logout') {
+      // Show toast before logout
+      toast({
+        title: "Cerrando sesión",
+        description: "Has cerrado sesión correctamente",
+      });
+      
+      // Navigate to home after a brief delay
+      setTimeout(() => {
+        navigate('/');
+      }, 1500);
+    }
+  };
+
+  const handleStateChange = () => {
+    toast({
+      title: "Estado actualizado",
+      description: "Tu negocio ahora aparece como Cerrado",
+      variant: "default",
+    });
+  };
   
   return (
     <div className="min-h-screen flex">
@@ -36,34 +65,62 @@ const BusinessDashboard: React.FC = () => {
         </div>
         
         <div className="space-y-2">
-          <Button variant="ghost" className="w-full justify-start">
+          <Button 
+            variant={activeSidebarItem === "dashboard" ? "default" : "ghost"} 
+            className="w-full justify-start"
+            onClick={() => handleSidebarClick("dashboard")}
+          >
             <Building className="mr-2 h-4 w-4" />
             Dashboard
           </Button>
-          <Button variant="ghost" className="w-full justify-start">
+          <Button 
+            variant={activeSidebarItem === "turnos" ? "default" : "ghost"} 
+            className="w-full justify-start"
+            onClick={() => handleSidebarClick("turnos")}
+          >
             <Clock className="mr-2 h-4 w-4" />
             Turnos Actuales
           </Button>
-          <Button variant="ghost" className="w-full justify-start">
+          <Button 
+            variant={activeSidebarItem === "citas" ? "default" : "ghost"} 
+            className="w-full justify-start"
+            onClick={() => handleSidebarClick("citas")}
+          >
             <Calendar className="mr-2 h-4 w-4" />
             Citas
           </Button>
-          <Button variant="ghost" className="w-full justify-start">
+          <Button 
+            variant={activeSidebarItem === "clientes" ? "default" : "ghost"} 
+            className="w-full justify-start"
+            onClick={() => handleSidebarClick("clientes")}
+          >
             <Users className="mr-2 h-4 w-4" />
             Clientes
           </Button>
-          <Button variant="ghost" className="w-full justify-start">
+          <Button 
+            variant={activeSidebarItem === "configuracion" ? "default" : "ghost"} 
+            className="w-full justify-start"
+            onClick={() => handleSidebarClick("configuracion")}
+          >
             <Settings className="mr-2 h-4 w-4" />
             Configuración
           </Button>
-          <Button variant="ghost" className="w-full justify-start">
+          <Button 
+            variant={activeSidebarItem === "soporte" ? "default" : "ghost"} 
+            className="w-full justify-start"
+            onClick={() => handleSidebarClick("soporte")}
+          >
             <HelpCircle className="mr-2 h-4 w-4" />
             Soporte
           </Button>
         </div>
         
         <div className="absolute bottom-8 left-4 right-4">
-          <Button variant="outline" className="w-full justify-start text-red-500 hover:text-red-700 hover:bg-red-50">
+          <Button 
+            variant="outline" 
+            className="w-full justify-start text-red-500 hover:text-red-700 hover:bg-red-50"
+            onClick={() => handleSidebarClick("logout")}
+          >
             Cerrar Sesión
           </Button>
         </div>
@@ -74,14 +131,22 @@ const BusinessDashboard: React.FC = () => {
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-2xl md:text-3xl font-bold">Dashboard de Barbería X</h1>
-            <Button className="bg-sinfilas-600 hover:bg-sinfilas-700">
+            <Button 
+              className="bg-sinfilas-600 hover:bg-sinfilas-700"
+              onClick={handleStateChange}
+            >
               <Clock className="mr-2 h-4 w-4" />
               Estado: Abierto
             </Button>
           </div>
           
           {/* Dashboard tabs */}
-          <Tabs defaultValue="perfil" className="w-full">
+          <Tabs 
+            defaultValue="perfil" 
+            value={activeTab} 
+            onValueChange={setActiveTab} 
+            className="w-full"
+          >
             <TabsList className="grid grid-cols-2 md:grid-cols-4 mb-8">
               <TabsTrigger value="perfil">Perfil</TabsTrigger>
               <TabsTrigger value="servicios">Servicios</TabsTrigger>
@@ -89,6 +154,7 @@ const BusinessDashboard: React.FC = () => {
               <TabsTrigger value="galeria">Galería</TabsTrigger>
             </TabsList>
             
+            {/* Profile Tab */}
             <TabsContent value="perfil">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <Card className="col-span-2">
@@ -188,6 +254,7 @@ const BusinessDashboard: React.FC = () => {
               </div>
             </TabsContent>
             
+            {/* Services Tab */}
             <TabsContent value="servicios">
               <Card>
                 <CardHeader>
@@ -209,12 +276,31 @@ const BusinessDashboard: React.FC = () => {
                             <DollarSign className="h-4 w-4 inline mr-1" />
                             15.00
                           </div>
-                          <Button variant="outline" size="sm">Editar</Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => {
+                              toast({
+                                title: "Editar servicio",
+                                description: `Editando: ${service}`,
+                              });
+                            }}
+                          >
+                            Editar
+                          </Button>
                         </div>
                       </div>
                     ))}
                     
-                    <Button className="mt-6 w-full">
+                    <Button 
+                      className="mt-6 w-full"
+                      onClick={() => {
+                        toast({
+                          title: "Nuevo servicio",
+                          description: "Formulario para añadir nuevo servicio",
+                        });
+                      }}
+                    >
                       Añadir Nuevo Servicio
                     </Button>
                   </div>
@@ -222,6 +308,7 @@ const BusinessDashboard: React.FC = () => {
               </Card>
             </TabsContent>
             
+            {/* Schedule Tab */}
             <TabsContent value="horarios">
               <Card>
                 <CardHeader>
@@ -260,6 +347,7 @@ const BusinessDashboard: React.FC = () => {
               </Card>
             </TabsContent>
             
+            {/* Gallery Tab */}
             <TabsContent value="galeria">
               <Card>
                 <CardHeader>
@@ -270,7 +358,15 @@ const BusinessDashboard: React.FC = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="aspect-square bg-gray-100 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-gray-200 transition">
+                    <div 
+                      className="aspect-square bg-gray-100 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-gray-200 transition"
+                      onClick={() => {
+                        toast({
+                          title: "Subir imagen",
+                          description: "Selecciona una imagen para subir a la galería",
+                        });
+                      }}
+                    >
                       <ImageIcon className="h-8 w-8 text-gray-400" />
                       <span className="mt-2 text-sm text-gray-500">Añadir Imagen</span>
                     </div>
@@ -283,7 +379,19 @@ const BusinessDashboard: React.FC = () => {
                           className="w-full h-full object-cover"
                         />
                         <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                          <Button variant="destructive" size="sm">Eliminar</Button>
+                          <Button 
+                            variant="destructive" 
+                            size="sm"
+                            onClick={() => {
+                              toast({
+                                title: "Imagen eliminada",
+                                description: `Imagen ${img} eliminada correctamente`,
+                                variant: "destructive",
+                              });
+                            }}
+                          >
+                            Eliminar
+                          </Button>
                         </div>
                       </div>
                     ))}

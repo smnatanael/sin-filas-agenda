@@ -1,12 +1,15 @@
-
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Check, Building2, Clock, MapPin, Calendar, Image, CreditCard } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const BusinessPage: React.FC = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  
   const features = [
     { icon: Clock, text: "Gestión de turnos en tiempo real" },
     { icon: Calendar, text: "Sistema de citas y agenda personalizable" },
@@ -15,6 +18,18 @@ const BusinessPage: React.FC = () => {
     { icon: Image, text: "Galería de imágenes para mostrar tus servicios" },
     { icon: CreditCard, text: "Panel para gestionar precios y servicios" }
   ];
+
+  const handlePlanSelection = (plan: string) => {
+    toast({
+      title: `Plan ${plan} seleccionado`,
+      description: "Redirigiendo al formulario de registro...",
+    });
+    
+    // Navigate to register with the plan as a query parameter
+    setTimeout(() => {
+      navigate(`/register?plan=${plan.toLowerCase()}`);
+    }, 1000);
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-white to-sinfilas-50">
@@ -70,8 +85,11 @@ const BusinessPage: React.FC = () => {
                 </ul>
               </CardContent>
               <CardFooter>
-                <Button className="w-full bg-sinfilas-600 hover:bg-sinfilas-700">
-                  <Link to="/register" className="w-full">Comenzar gratis</Link>
+                <Button 
+                  className="w-full bg-sinfilas-600 hover:bg-sinfilas-700"
+                  onClick={() => handlePlanSelection("Básico")}
+                >
+                  Comenzar gratis
                 </Button>
               </CardFooter>
             </Card>
@@ -104,8 +122,11 @@ const BusinessPage: React.FC = () => {
                 </ul>
               </CardContent>
               <CardFooter>
-                <Button className="w-full bg-sinfilas-600 hover:bg-sinfilas-700">
-                  <Link to="/register" className="w-full">Prueba gratis</Link>
+                <Button 
+                  className="w-full bg-sinfilas-600 hover:bg-sinfilas-700"
+                  onClick={() => handlePlanSelection("Profesional")}
+                >
+                  Prueba gratis
                 </Button>
               </CardFooter>
             </Card>
@@ -137,8 +158,11 @@ const BusinessPage: React.FC = () => {
                 </ul>
               </CardContent>
               <CardFooter>
-                <Button className="w-full bg-sinfilas-600 hover:bg-sinfilas-700">
-                  <Link to="/register" className="w-full">Contactar ventas</Link>
+                <Button 
+                  className="w-full bg-sinfilas-600 hover:bg-sinfilas-700"
+                  onClick={() => handlePlanSelection("Empresarial")}
+                >
+                  Contactar ventas
                 </Button>
               </CardFooter>
             </Card>
@@ -152,8 +176,11 @@ const BusinessPage: React.FC = () => {
               Regístrate ahora y comienza a gestionar tus citas y turnos de manera eficiente. 
               Mejora la experiencia de tus clientes y optimiza los tiempos de espera.
             </p>
-            <Button className="bg-sinfilas-600 hover:bg-sinfilas-700 text-white font-medium rounded-lg px-8 py-3 text-lg transition-all duration-200 ease-in-out transform hover:scale-105">
-              <Link to="/register">Registrar mi negocio</Link>
+            <Button 
+              className="bg-sinfilas-600 hover:bg-sinfilas-700 text-white font-medium rounded-lg px-8 py-3 text-lg transition-all duration-200 ease-in-out transform hover:scale-105"
+              onClick={() => navigate('/register')}
+            >
+              Registrar mi negocio
             </Button>
           </div>
         </section>
