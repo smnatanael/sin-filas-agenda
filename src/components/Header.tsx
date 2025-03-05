@@ -54,11 +54,15 @@ const Header: React.FC<HeaderProps> = ({
                 </>
               ) : (
                 <>
-                  <Button variant="ghost">Para Negocios</Button>
+                  <Button variant="ghost">
+                    <Link to="/business">Para Negocios</Link>
+                  </Button>
                   <Button variant="ghost">Cómo Funciona</Button>
-                  <Button variant="ghost">Contacto</Button>
+                  <Button variant="ghost">
+                    <Link to="/contact">Contacto</Link>
+                  </Button>
                   <Button variant="default" className="bg-sinfilas-600 hover:bg-sinfilas-700">
-                    Iniciar Sesión
+                    <Link to="/login">Iniciar Sesión</Link>
                   </Button>
                 </>
               )}
