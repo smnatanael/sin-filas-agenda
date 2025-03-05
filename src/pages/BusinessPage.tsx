@@ -1,5 +1,6 @@
+
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -166,22 +167,6 @@ const BusinessPage: React.FC = () => {
                 </Button>
               </CardFooter>
             </Card>
-          </div>
-        </section>
-        
-        <section className="mb-16">
-          <div className="glassmorphism rounded-xl p-8 text-center">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">¿Listo para optimizar tu negocio?</h2>
-            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-              Regístrate ahora y comienza a gestionar tus citas y turnos de manera eficiente. 
-              Mejora la experiencia de tus clientes y optimiza los tiempos de espera.
-            </p>
-            <Button 
-              className="bg-sinfilas-600 hover:bg-sinfilas-700 text-white font-medium rounded-lg px-8 py-3 text-lg transition-all duration-200 ease-in-out transform hover:scale-105"
-              onClick={() => navigate('/register')}
-            >
-              Registrar mi negocio
-            </Button>
           </div>
         </section>
       </main>

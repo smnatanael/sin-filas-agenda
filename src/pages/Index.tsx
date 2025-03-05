@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import SearchBar from '@/components/SearchBar';
 import EstablishmentCard, { EstablishmentProps } from '@/components/EstablishmentCard';
@@ -64,6 +64,12 @@ const demoEstablishments: EstablishmentProps[] = [
 ];
 
 const Index: React.FC = () => {
+  const navigate = useNavigate();
+  
+  const handleRegisterBusiness = () => {
+    navigate('/business');
+  };
+  
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-white to-sinfilas-50">
       <Header />
@@ -101,11 +107,12 @@ const Index: React.FC = () => {
             <p className="text-gray-600 mb-6 text-balance">
               Optimiza la gestión de turnos y citas de tu establecimiento. Mejora la experiencia de tus clientes y aumenta la eficiencia.
             </p>
-            <Link to="/business">
-              <button className="bg-sinfilas-600 hover:bg-sinfilas-700 text-white font-medium rounded-lg px-8 py-3 transition-all duration-200 ease-in-out transform hover:scale-105">
-                Registra tu negocio
-              </button>
-            </Link>
+            <button 
+              onClick={handleRegisterBusiness}
+              className="bg-sinfilas-600 hover:bg-sinfilas-700 text-white font-medium rounded-lg px-8 py-3 transition-all duration-200 ease-in-out transform hover:scale-105"
+            >
+              Registra tu negocio
+            </button>
           </div>
         </section>
       </main>

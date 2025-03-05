@@ -19,10 +19,11 @@ const Header: React.FC<HeaderProps> = ({
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const handleScheduleAppointment = () => {
+  const handleViewAppointments = () => {
+    navigate('/appointments');
     toast({
-      title: "Agendar Cita",
-      description: "Funcionalidad de agendar cita activada",
+      title: "Mis Citas",
+      description: "Visualizando tus citas agendadas",
     });
   };
 
@@ -78,10 +79,10 @@ const Header: React.FC<HeaderProps> = ({
                   <Button 
                     variant="ghost" 
                     className="flex items-center space-x-2"
-                    onClick={handleScheduleAppointment}
+                    onClick={handleViewAppointments}
                   >
                     <Calendar className="h-4 w-4" />
-                    <span>Agendar Cita</span>
+                    <span>Mis Citas</span>
                   </Button>
                   <Button 
                     variant="ghost" 
@@ -94,6 +95,14 @@ const Header: React.FC<HeaderProps> = ({
                 </>
               ) : (
                 <>
+                  <Button 
+                    variant="ghost"
+                    onClick={handleViewAppointments}
+                    className="flex items-center space-x-2"
+                  >
+                    <Calendar className="h-4 w-4" />
+                    <span>Mis Citas</span>
+                  </Button>
                   <Button variant="ghost">
                     <Link to="/business">Para Negocios</Link>
                   </Button>
