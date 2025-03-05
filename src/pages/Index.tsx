@@ -1,8 +1,8 @@
-
 import React from 'react';
 import Header from '@/components/Header';
 import SearchBar from '@/components/SearchBar';
 import EstablishmentCard, { EstablishmentProps } from '@/components/EstablishmentCard';
+import { Clock } from 'lucide-react';
 
 const demoEstablishments: EstablishmentProps[] = [
   {
