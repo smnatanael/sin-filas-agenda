@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import SearchBar from '@/components/SearchBar';
 import EstablishmentCard, { EstablishmentProps } from '@/components/EstablishmentCard';
@@ -72,6 +72,10 @@ const Index: React.FC = () => {
     navigate('/business');
   };
   
+  const handleViewAllEstablishments = () => {
+    navigate('/establishments');
+  };
+  
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-white to-sinfilas-50">
       <Header />
@@ -90,7 +94,12 @@ const Index: React.FC = () => {
         <section>
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-2xl font-bold text-gray-900">Establecimientos Populares</h2>
-            <button className="text-sinfilas-600 hover:text-sinfilas-700 font-medium">Ver todos</button>
+            <button 
+              onClick={handleViewAllEstablishments} 
+              className="text-sinfilas-600 hover:text-sinfilas-700 font-medium"
+            >
+              Ver todos
+            </button>
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -125,8 +134,10 @@ const Index: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center mb-4 md:mb-0">
-              <Clock className="h-6 w-6 text-sinfilas-600" />
-              <span className="ml-2 text-xl font-bold text-sinfilas-600">SinFilas</span>
+              <button onClick={() => navigate('/')} className="flex items-center">
+                <Clock className="h-6 w-6 text-sinfilas-600" />
+                <span className="ml-2 text-xl font-bold text-sinfilas-600">SinFilas</span>
+              </button>
             </div>
             <div className="text-sm text-gray-500">© {new Date().getFullYear()} SinFilas. Todos los derechos reservados.</div>
           </div>

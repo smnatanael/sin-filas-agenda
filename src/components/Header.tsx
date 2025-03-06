@@ -28,6 +28,7 @@ const Header: React.FC<HeaderProps> = ({
   };
 
   const handleViewTurns = () => {
+    navigate('/turns');
     toast({
       title: "Mis Turnos",
       description: "Visualizando tus turnos actuales",
@@ -35,6 +36,7 @@ const Header: React.FC<HeaderProps> = ({
   };
 
   const handleShowHowItWorks = () => {
+    navigate('/how-it-works');
     toast({
       title: "Cómo Funciona",
       description: "Mostrando guía de funcionamiento de SinFilas",
@@ -48,12 +50,16 @@ const Header: React.FC<HeaderProps> = ({
     });
   };
 
+  const handleGoHome = () => {
+    navigate('/');
+  };
+
   return (
     <header className="w-full sticky top-0 z-50 glassmorphism animate-blur-in">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
-            <Link to="/" className="flex items-center space-x-3">
+            <button onClick={handleGoHome} className="flex items-center space-x-3">
               {isBusinessPage && logoUrl ? (
                 <img 
                   src={logoUrl} 
@@ -69,7 +75,7 @@ const Header: React.FC<HeaderProps> = ({
               {isBusinessPage && businessName && (
                 <span className="text-xl font-medium text-gray-800">{businessName}</span>
               )}
-            </Link>
+            </button>
           </div>
           
           <div className="hidden md:block">
@@ -103,8 +109,11 @@ const Header: React.FC<HeaderProps> = ({
                     <Calendar className="h-4 w-4" />
                     <span>Mis Citas</span>
                   </Button>
-                  <Button variant="ghost">
-                    <Link to="/business">Para Negocios</Link>
+                  <Button 
+                    variant="ghost"
+                    onClick={() => navigate('/business')}
+                  >
+                    Para Negocios
                   </Button>
                   <Button 
                     variant="ghost"
@@ -112,11 +121,18 @@ const Header: React.FC<HeaderProps> = ({
                   >
                     Cómo Funciona
                   </Button>
-                  <Button variant="ghost">
-                    <Link to="/contact">Contacto</Link>
+                  <Button 
+                    variant="ghost" 
+                    onClick={() => navigate('/contact')}
+                  >
+                    Contacto
                   </Button>
-                  <Button variant="default" className="bg-sinfilas-600 hover:bg-sinfilas-700">
-                    <Link to="/login">Iniciar Sesión</Link>
+                  <Button 
+                    variant="default" 
+                    className="bg-sinfilas-600 hover:bg-sinfilas-700"
+                    onClick={() => navigate('/login')}
+                  >
+                    Iniciar Sesión
                   </Button>
                 </>
               )}
