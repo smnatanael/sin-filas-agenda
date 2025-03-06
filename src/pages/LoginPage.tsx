@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,8 +8,10 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
+import { MOCK_USERS } from '@/App';
 
 const LoginPage: React.FC = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -22,13 +24,37 @@ const LoginPage: React.FC = () => {
     e.preventDefault();
     setLoading(true);
     
-    // Simulación de login
+    // Check if username/email matches admin
+    const user = MOCK_USERS.find(u => 
+      (u.username === email || email === 'admin') && 
+      u.password === password
+    );
+
     setTimeout(() => {
       setLoading(false);
-      toast({
-        title: "Inicio de sesión exitoso",
-        description: "Bienvenido de nuevo a SinFilas",
-      });
+      
+      if (user) {
+        // Store user in localStorage
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        
+        toast({
+          title: "Inicio de sesión exitoso",
+          description: "Bienvenido de nuevo a SinFilas",
+        });
+        
+        // If business user, redirect to dashboard
+        if (user.role === 'business') {
+          navigate('/dashboard');
+        } else {
+          navigate('/');
+        }
+      } else {
+        toast({
+          title: "Error de inicio de sesión",
+          description: "Credenciales incorrectas. Intenta con admin/admin",
+          variant: "destructive"
+        });
+      }
     }, 1000);
   };
 
@@ -49,10 +75,10 @@ const LoginPage: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-white to-sinfilas-50 p-4">
-      <Link to="/" className="flex items-center mb-8 hover:opacity-80 transition-opacity">
+      <button onClick={() => navigate('/')} className="flex items-center mb-8 hover:opacity-80 transition-opacity">
         <Clock className="h-8 w-8 text-sinfilas-600" />
         <span className="ml-2 text-2xl font-bold text-sinfilas-600">SinFilas</span>
-      </Link>
+      </button>
       
       {!showForgotPassword ? (
         <Card className="w-full max-w-md shadow-xl glassmorphism">
@@ -72,11 +98,11 @@ const LoginPage: React.FC = () => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="email">Correo Electrónico</Label>
+                    <Label htmlFor="email">Usuario o Correo Electrónico</Label>
                     <Input 
                       id="email" 
-                      type="email" 
-                      placeholder="tu@correo.com" 
+                      type="text" 
+                      placeholder="admin" 
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
@@ -96,11 +122,14 @@ const LoginPage: React.FC = () => {
                     <Input 
                       id="password" 
                       type="password" 
-                      placeholder="••••••••" 
+                      placeholder="admin" 
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
                     />
+                  </div>
+                  <div className="text-xs text-gray-500 italic">
+                    Usuario predeterminado: admin / Contraseña: admin
                   </div>
                 </CardContent>
                 <CardFooter>
@@ -148,7 +177,7 @@ const LoginPage: React.FC = () => {
                 <div className="flex items-center space-x-2">
                   <input type="checkbox" id="terms" className="rounded border-gray-300 text-sinfilas-600 focus:ring-sinfilas-500" required />
                   <Label htmlFor="terms" className="text-sm">
-                    Acepto los <Link to="/terms" className="text-sinfilas-600 hover:underline">términos y condiciones</Link>
+                    Acepto los <button onClick={() => navigate('/terms')} className="text-sinfilas-600 hover:underline">términos y condiciones</button>
                   </Label>
                 </div>
               </CardContent>
@@ -204,7 +233,7 @@ const LoginPage: React.FC = () => {
       )}
       
       <p className="mt-8 text-center text-gray-500">
-        ¿Necesitas ayuda? <Link to="/contact" className="text-sinfilas-600 hover:underline">Contáctanos</Link>
+        ¿Necesitas ayuda? <button onClick={() => navigate('/contact')} className="text-sinfilas-600 hover:underline">Contáctanos</button>
       </p>
     </div>
   );

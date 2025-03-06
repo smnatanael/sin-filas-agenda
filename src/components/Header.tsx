@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Clock, Calendar, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -17,7 +17,15 @@ const Header: React.FC<HeaderProps> = ({
   isBusinessPage = false 
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // Check if user is logged in from localStorage
+    const user = localStorage.getItem('currentUser');
+    setIsLoggedIn(!!user);
+  }, [location]);
 
   const handleViewAppointments = () => {
     navigate('/appointments');
@@ -101,14 +109,16 @@ const Header: React.FC<HeaderProps> = ({
                 </>
               ) : (
                 <>
-                  <Button 
-                    variant="ghost"
-                    onClick={handleViewAppointments}
-                    className="flex items-center space-x-2"
-                  >
-                    <Calendar className="h-4 w-4" />
-                    <span>Mis Citas</span>
-                  </Button>
+                  {isLoggedIn && (
+                    <Button 
+                      variant="ghost"
+                      onClick={handleViewAppointments}
+                      className="flex items-center space-x-2"
+                    >
+                      <Calendar className="h-4 w-4" />
+                      <span>Mis Citas</span>
+                    </Button>
+                  )}
                   <Button 
                     variant="ghost"
                     onClick={() => navigate('/business')}
@@ -127,13 +137,31 @@ const Header: React.FC<HeaderProps> = ({
                   >
                     Contacto
                   </Button>
-                  <Button 
-                    variant="default" 
-                    className="bg-sinfilas-600 hover:bg-sinfilas-700"
-                    onClick={() => navigate('/login')}
-                  >
-                    Iniciar Sesión
-                  </Button>
+                  {isLoggedIn ? (
+                    <Button 
+                      variant="default" 
+                      className="bg-sinfilas-600 hover:bg-sinfilas-700"
+                      onClick={() => {
+                        localStorage.removeItem('currentUser');
+                        setIsLoggedIn(false);
+                        navigate('/');
+                        toast({
+                          title: "Sesión cerrada",
+                          description: "Has cerrado sesión correctamente",
+                        });
+                      }}
+                    >
+                      Cerrar Sesión
+                    </Button>
+                  ) : (
+                    <Button 
+                      variant="default" 
+                      className="bg-sinfilas-600 hover:bg-sinfilas-700"
+                      onClick={() => navigate('/login')}
+                    >
+                      Iniciar Sesión
+                    </Button>
+                  )}
                 </>
               )}
             </div>

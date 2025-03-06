@@ -11,6 +11,21 @@ import LoginPage from "./pages/LoginPage";
 import BusinessPage from "./pages/BusinessPage";
 import BusinessDashboard from "./pages/BusinessDashboard";
 import ContactPage from "./pages/ContactPage";
+import DashboardHome from "./pages/dashboard/DashboardHome";
+import CurrentTurns from "./pages/dashboard/CurrentTurns";
+import Appointments from "./pages/dashboard/Appointments";
+import Clients from "./pages/dashboard/Clients";
+import Settings from "./pages/dashboard/Settings";
+import Support from "./pages/dashboard/Support";
+
+// Mock user authentication
+export const MOCK_USERS = [
+  {
+    username: "admin",
+    password: "admin",
+    role: "business"
+  }
+];
 
 const queryClient = new QueryClient();
 
@@ -26,8 +41,14 @@ const App = () => (
           <Route path="/business" element={<BusinessPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<LoginPage />} />
-          <Route path="/dashboard" element={<BusinessDashboard />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/dashboard" element={<BusinessDashboard />} />
+          <Route path="/dashboard/home" element={<DashboardHome />} />
+          <Route path="/dashboard/turns" element={<CurrentTurns />} />
+          <Route path="/dashboard/appointments" element={<Appointments />} />
+          <Route path="/dashboard/clients" element={<Clients />} />
+          <Route path="/dashboard/settings" element={<Settings />} />
+          <Route path="/dashboard/support" element={<Support />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

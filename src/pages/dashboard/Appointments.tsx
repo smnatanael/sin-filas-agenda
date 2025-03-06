@@ -1,101 +1,98 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Calendar as CalendarIcon, Clock, MessageCircle, X, Plus, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Calendar, MessageCircle, X, Search, Clock, CalendarDays } from 'lucide-react';
+import { Calendar } from '@/components/ui/calendar';
 import { useToast } from '@/hooks/use-toast';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import Sidebar from '@/components/dashboard/Sidebar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 interface Appointment {
   id: string;
-  name: string;
-  phone: string;
+  customerId: string;
+  customerName: string;
   service: string;
-  date: string;
-  time: string;
+  date: Date;
   duration: number;
-  status: 'scheduled' | 'confirmed' | 'completed' | 'cancelled';
-  imageUrl: string;
+  status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
+  phone: string;
+  email: string;
 }
 
-const demoAppointments: Appointment[] = [
+const mockAppointments: Appointment[] = [
   {
     id: 'a1',
-    name: 'Elena López',
-    phone: '+34 612 345 555',
-    service: 'Corte de Cabello',
-    date: '2023-11-15',
-    time: '10:00',
+    customerId: 'c1',
+    customerName: 'Juan Pérez',
+    service: 'Corte de Cabello Premium',
+    date: new Date(new Date().setHours(10, 0, 0, 0)),
     duration: 30,
-    status: 'scheduled',
-    imageUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=100&h=100&fit=crop'
+    status: 'confirmed',
+    phone: '+12345678',
+    email: 'juan@example.com'
   },
   {
     id: 'a2',
-    name: 'Juan Pérez',
-    phone: '+34 612 345 666',
-    service: 'Afeitado',
-    date: '2023-11-15',
-    time: '11:30',
-    duration: 20,
-    status: 'confirmed',
-    imageUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=100&h=100&fit=crop'
+    customerId: 'c2',
+    customerName: 'María López',
+    service: 'Tinte + Corte',
+    date: new Date(new Date().setHours(11, 30, 0, 0)),
+    duration: 90,
+    status: 'pending',
+    phone: '+12345679',
+    email: 'maria@example.com'
   },
   {
     id: 'a3',
-    name: 'María Gutiérrez',
-    phone: '+34 612 345 777',
-    service: 'Corte y Peinado',
-    date: '2023-11-16',
-    time: '09:00',
+    customerId: 'c3',
+    customerName: 'Carlos Rodríguez',
+    service: 'Barba + Corte',
+    date: new Date(new Date().setHours(14, 15, 0, 0)),
     duration: 45,
-    status: 'scheduled',
-    imageUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=100&h=100&fit=crop'
+    status: 'pending',
+    phone: '+12345670',
+    email: 'carlos@example.com'
   },
   {
     id: 'a4',
-    name: 'Pedro Martín',
-    phone: '+34 612 345 888',
-    service: 'Corte de Barba',
-    date: '2023-11-17',
-    time: '16:00',
-    duration: 15,
-    status: 'scheduled',
-    imageUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=100&h=100&fit=crop'
+    customerId: 'c4',
+    customerName: 'Ana Martínez',
+    service: 'Manicure + Pedicure',
+    date: new Date(new Date().setHours(16, 0, 0, 0)),
+    duration: 60,
+    status: 'confirmed',
+    phone: '+12345671',
+    email: 'ana@example.com'
   }
 ];
 
 const Appointments: React.FC = () => {
-  const [appointments, setAppointments] = useState<Appointment[]>(demoAppointments);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [activeTab, setActiveTab] = useState('upcoming');
+  const [appointments, setAppointments] = useState<Appointment[]>(mockAppointments);
+  const [showAddAppointment, setShowAddAppointment] = useState(false);
+  const [showMessageDialog, setShowMessageDialog] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
+  const [message, setMessage] = useState('');
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const { toast } = useToast();
   
-  const handleMessageClient = (appointment: Appointment) => {
-    toast({
-      title: "Redirigiendo al chat",
-      description: `Contactando a ${appointment.name}`,
-    });
-  };
-  
-  const handleCancelAppointment = (appointmentId: string) => {
-    setAppointments(appointments.map(appointment => {
-      if (appointment.id === appointmentId) {
-        return { ...appointment, status: 'cancelled' };
-      }
-      return appointment;
-    }));
-    
-    toast({
-      title: "Cita cancelada",
-      description: "La cita ha sido cancelada correctamente",
-      variant: "destructive",
-    });
-  };
-  
-  const handleStatusChange = (appointmentId: string, newStatus: 'scheduled' | 'confirmed' | 'completed' | 'cancelled') => {
+  const [newAppointment, setNewAppointment] = useState({
+    customerName: '',
+    phone: '',
+    email: '',
+    service: '',
+    date: new Date(),
+    time: '10:00',
+    duration: 30
+  });
+
+  const handleStatusChange = (appointmentId: string, newStatus: Appointment['status']) => {
     setAppointments(appointments.map(appointment => {
       if (appointment.id === appointmentId) {
         return { ...appointment, status: newStatus };
@@ -103,170 +100,425 @@ const Appointments: React.FC = () => {
       return appointment;
     }));
     
-    const statusMessages = {
-      'scheduled': 'La cita ha sido programada',
-      'confirmed': 'La cita ha sido confirmada',
-      'completed': 'La cita ha sido completada',
-      'cancelled': 'La cita ha sido cancelada'
-    };
-    
     toast({
       title: "Estado actualizado",
-      description: statusMessages[newStatus],
+      description: `Cita actualizada a "${newStatus}"`,
     });
   };
-  
-  const filteredAppointments = appointments.filter(appointment => {
-    const matchesSearch = appointment.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         appointment.service.toLowerCase().includes(searchTerm.toLowerCase());
+
+  const handleAddAppointment = () => {
+    const newId = `a${appointments.length + 1}`;
+    const [hours, minutes] = newAppointment.time.split(':').map(Number);
     
-    if (activeTab === 'upcoming') {
-      return matchesSearch && (appointment.status === 'scheduled' || appointment.status === 'confirmed');
-    } else if (activeTab === 'completed') {
-      return matchesSearch && appointment.status === 'completed';
-    } else if (activeTab === 'cancelled') {
-      return matchesSearch && appointment.status === 'cancelled';
+    const appointmentDate = new Date(newAppointment.date);
+    appointmentDate.setHours(hours, minutes, 0, 0);
+    
+    const appointmentToAdd: Appointment = {
+      id: newId,
+      customerId: `c${appointments.length + 1}`,
+      customerName: newAppointment.customerName,
+      service: newAppointment.service,
+      date: appointmentDate,
+      duration: newAppointment.duration,
+      status: 'pending',
+      phone: newAppointment.phone,
+      email: newAppointment.email
+    };
+    
+    setAppointments([...appointments, appointmentToAdd]);
+    setNewAppointment({
+      customerName: '',
+      phone: '',
+      email: '',
+      service: '',
+      date: new Date(),
+      time: '10:00',
+      duration: 30
+    });
+    setShowAddAppointment(false);
+    
+    toast({
+      title: "Cita agendada",
+      description: `Se ha agendado una cita para ${newAppointment.customerName}`,
+    });
+  };
+
+  const handleRemoveAppointment = (appointmentId: string) => {
+    setAppointments(appointments.filter(appointment => appointment.id !== appointmentId));
+    
+    toast({
+      title: "Cita eliminada",
+      description: "Se ha eliminado la cita del calendario",
+    });
+  };
+
+  const handleOpenMessage = (appointment: Appointment) => {
+    setSelectedAppointment(appointment);
+    setShowMessageDialog(true);
+  };
+
+  const handleSendMessage = () => {
+    if (!selectedAppointment || !message.trim()) return;
+    
+    toast({
+      title: "Mensaje enviado",
+      description: `Mensaje enviado a ${selectedAppointment.customerName}`,
+    });
+    
+    setMessage('');
+    setShowMessageDialog(false);
+  };
+
+  const getStatusBadge = (status: Appointment['status']) => {
+    switch (status) {
+      case 'pending':
+        return <Badge variant="outline" className="bg-yellow-100 text-yellow-800 border-yellow-200">Pendiente</Badge>;
+      case 'confirmed':
+        return <Badge variant="outline" className="bg-green-100 text-green-800 border-green-200">Confirmada</Badge>;
+      case 'cancelled':
+        return <Badge variant="outline" className="bg-red-100 text-red-800 border-red-200">Cancelada</Badge>;
+      case 'completed':
+        return <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-200">Completada</Badge>;
     }
-    
-    return matchesSearch;
+  };
+
+  const filteredAppointments = appointments.filter(appointment => {
+    return appointment.date.toDateString() === selectedDate.toDateString();
   });
-  
+
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Citas</h1>
-        <div className="relative w-64">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
-          <Input 
-            placeholder="Buscar citas..." 
-            className="pl-8"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-      </div>
+    <div className="flex min-h-screen">
+      <Sidebar activeSidebarItem="citas" />
       
-      <Tabs defaultValue="upcoming" value={activeTab} onValueChange={setActiveTab} className="mb-6">
-        <TabsList>
-          <TabsTrigger value="upcoming">Próximas</TabsTrigger>
-          <TabsTrigger value="completed">Completadas</TabsTrigger>
-          <TabsTrigger value="cancelled">Canceladas</TabsTrigger>
-        </TabsList>
-      </Tabs>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {filteredAppointments.map((appointment) => (
-          <Card key={appointment.id} className={`
-            ${appointment.status === 'confirmed' ? 'border-l-4 border-l-amber-500' : ''}
-            ${appointment.status === 'completed' ? 'border-l-4 border-l-green-500' : ''}
-            ${appointment.status === 'scheduled' ? 'border-l-4 border-l-blue-500' : ''}
-            ${appointment.status === 'cancelled' ? 'border-l-4 border-l-red-500' : ''}
-          `}>
-            <CardHeader className="pb-2">
-              <div className="flex justify-between items-start">
-                <div className="flex items-center space-x-3">
-                  <img src={appointment.imageUrl} alt={appointment.name} className="h-10 w-10 rounded-full object-cover" />
-                  <div>
-                    <CardTitle className="text-lg">{appointment.name}</CardTitle>
-                    <p className="text-sm text-gray-500">{appointment.phone}</p>
+      <div className="flex-1 p-4 md:p-8 bg-gradient-to-b from-white to-sinfilas-50">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-bold text-gray-900">Citas</h1>
+            <Button onClick={() => setShowAddAppointment(true)} className="bg-sinfilas-600 hover:bg-sinfilas-700">
+              <Plus className="mr-2 h-4 w-4" />
+              Nueva Cita
+            </Button>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <Card className="shadow-md lg:col-span-1">
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <CalendarIcon className="h-5 w-5 mr-2 text-sinfilas-600" />
+                  Calendario
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={(date) => date && setSelectedDate(date)}
+                  className="rounded-md border"
+                  locale={es}
+                />
+                
+                <div className="mt-6">
+                  <h3 className="font-medium text-gray-900 mb-3">Resumen del día</h3>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">Total citas:</span>
+                      <span className="text-sm font-medium">{filteredAppointments.length}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">Confirmadas:</span>
+                      <span className="text-sm font-medium">
+                        {filteredAppointments.filter(a => a.status === 'confirmed').length}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">Pendientes:</span>
+                      <span className="text-sm font-medium">
+                        {filteredAppointments.filter(a => a.status === 'pending').length}
+                      </span>
+                    </div>
                   </div>
                 </div>
-                {appointment.status !== 'cancelled' && appointment.status !== 'completed' && (
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
-                    onClick={() => handleCancelAppointment(appointment.id)}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
+              </CardContent>
+            </Card>
+            
+            <Card className="shadow-md lg:col-span-2">
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Clock className="h-5 w-5 mr-2 text-sinfilas-600" />
+                  Citas para {format(selectedDate, "d 'de' MMMM", { locale: es })}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {filteredAppointments.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    No hay citas programadas para este día
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {filteredAppointments
+                      .sort((a, b) => a.date.getTime() - b.date.getTime())
+                      .map(appointment => (
+                      <div key={appointment.id} className="p-4 border rounded-lg">
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <h3 className="font-medium text-gray-900">{appointment.customerName}</h3>
+                            <p className="text-sm text-gray-600">{appointment.service}</p>
+                            <p className="text-sm text-gray-500">
+                              {format(appointment.date, "h:mm a")} • {appointment.duration} min
+                            </p>
+                          </div>
+                          <div className="flex items-center">
+                            {getStatusBadge(appointment.status)}
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              className="ml-1 text-red-500 hover:text-red-700"
+                              onClick={() => handleRemoveAppointment(appointment.id)}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                        <div className="flex justify-end items-center space-x-2 mt-2">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleOpenMessage(appointment)}
+                          >
+                            <MessageCircle className="h-4 w-4" />
+                          </Button>
+                          
+                          {appointment.status === 'pending' && (
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              className="text-green-600 border-green-200 hover:bg-green-50"
+                              onClick={() => handleStatusChange(appointment.id, 'confirmed')}
+                            >
+                              Confirmar
+                            </Button>
+                          )}
+                          
+                          {appointment.status === 'confirmed' && (
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                              onClick={() => handleStatusChange(appointment.id, 'completed')}
+                            >
+                              Completar
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 )}
-              </div>
+              </CardContent>
+            </Card>
+          </div>
+          
+          <Card className="shadow-md mb-8">
+            <CardHeader>
+              <CardTitle>Próximas Citas</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Servicio:</span>
-                  <span className="font-medium">{appointment.service}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Fecha:</span>
-                  <span className="font-medium flex items-center">
-                    <CalendarDays className="h-3 w-3 mr-1" />
-                    {appointment.date}
-                  </span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Hora:</span>
-                  <span className="font-medium flex items-center">
-                    <Clock className="h-3 w-3 mr-1" />
-                    {appointment.time} ({appointment.duration} min)
-                  </span>
-                </div>
-                
-                {appointment.status !== 'cancelled' && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-500">Estado:</span>
-                    <select 
-                      value={appointment.status}
-                      onChange={(e) => handleStatusChange(appointment.id, e.target.value as 'scheduled' | 'confirmed' | 'completed' | 'cancelled')}
-                      className="text-sm font-medium bg-transparent border-none outline-none cursor-pointer"
-                      disabled={appointment.status === 'completed'}
-                    >
-                      <option value="scheduled">Programada</option>
-                      <option value="confirmed">Confirmada</option>
-                      <option value="completed">Completada</option>
-                    </select>
-                  </div>
-                )}
-                
-                {appointment.status !== 'cancelled' && appointment.status !== 'completed' && (
-                  <div className="flex justify-center mt-2">
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          className="text-xs mr-2"
-                          onClick={() => handleMessageClient(appointment)}
-                        >
-                          <MessageCircle className="h-3 w-3 mr-1" />
-                          Contactar
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Ir a Clientes</DialogTitle>
-                        </DialogHeader>
-                        <div className="py-4">
-                          <p>Para chatear con el cliente, accede a la sección de "Clientes" donde encontrarás todas las conversaciones organizadas.</p>
-                        </div>
-                        <Button className="w-full" onClick={() => window.location.href = "/dashboard/clients"}>
-                          Ir a Clientes
-                        </Button>
-                      </DialogContent>
-                    </Dialog>
-                  </div>
-                )}
+              <div className="overflow-x-auto">
+                <table className="w-full text-left">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="pb-3 text-gray-500 font-medium">Cliente</th>
+                      <th className="pb-3 text-gray-500 font-medium">Servicio</th>
+                      <th className="pb-3 text-gray-500 font-medium">Fecha</th>
+                      <th className="pb-3 text-gray-500 font-medium">Hora</th>
+                      <th className="pb-3 text-gray-500 font-medium">Estado</th>
+                      <th className="pb-3 text-gray-500 font-medium">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {appointments
+                      .filter(a => a.date > new Date() && a.status !== 'cancelled')
+                      .sort((a, b) => a.date.getTime() - b.date.getTime())
+                      .slice(0, 5)
+                      .map(appointment => (
+                        <tr key={appointment.id} className="border-b">
+                          <td className="py-3">{appointment.customerName}</td>
+                          <td className="py-3">{appointment.service}</td>
+                          <td className="py-3">{format(appointment.date, "d MMM yyyy", { locale: es })}</td>
+                          <td className="py-3">{format(appointment.date, "h:mm a")}</td>
+                          <td className="py-3">{getStatusBadge(appointment.status)}</td>
+                          <td className="py-3">
+                            <div className="flex space-x-2">
+                              <Button 
+                                variant="ghost" 
+                                size="sm"
+                                onClick={() => handleOpenMessage(appointment)}
+                              >
+                                <MessageCircle className="h-4 w-4" />
+                              </Button>
+                              
+                              {appointment.status === 'pending' && (
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm"
+                                  className="text-green-600"
+                                  onClick={() => handleStatusChange(appointment.id, 'confirmed')}
+                                >
+                                  <Check className="h-4 w-4" />
+                                </Button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    
+                    {appointments.filter(a => a.date > new Date() && a.status !== 'cancelled').length === 0 && (
+                      <tr>
+                        <td colSpan={6} className="py-4 text-center text-gray-500">
+                          No hay citas programadas próximamente
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
             </CardContent>
           </Card>
-        ))}
+        </div>
       </div>
       
-      {filteredAppointments.length === 0 && (
-        <div className="text-center py-12">
-          <Calendar className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-          <h3 className="text-lg font-medium text-gray-600">No hay citas {activeTab === 'upcoming' ? 'programadas' : activeTab === 'completed' ? 'completadas' : 'canceladas'}</h3>
-          <p className="text-gray-500">
-            {activeTab === 'upcoming' 
-              ? 'Actualmente no hay citas programadas o confirmadas.' 
-              : activeTab === 'completed' 
-                ? 'No tienes citas completadas en este período.' 
-                : 'No tienes citas canceladas en este período.'}
-          </p>
-        </div>
-      )}
+      {/* Add Appointment Dialog */}
+      <Dialog open={showAddAppointment} onOpenChange={setShowAddAppointment}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Agendar Nueva Cita</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="customerName">Nombre del Cliente</Label>
+              <Input 
+                id="customerName" 
+                value={newAppointment.customerName} 
+                onChange={e => setNewAppointment({...newAppointment, customerName: e.target.value})} 
+                placeholder="Nombre completo" 
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="phone">Teléfono</Label>
+              <Input 
+                id="phone" 
+                value={newAppointment.phone} 
+                onChange={e => setNewAppointment({...newAppointment, phone: e.target.value})} 
+                placeholder="+123456789" 
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">Correo Electrónico</Label>
+              <Input 
+                id="email" 
+                type="email" 
+                value={newAppointment.email} 
+                onChange={e => setNewAppointment({...newAppointment, email: e.target.value})} 
+                placeholder="cliente@example.com" 
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="service">Servicio</Label>
+              <Input 
+                id="service" 
+                value={newAppointment.service} 
+                onChange={e => setNewAppointment({...newAppointment, service: e.target.value})} 
+                placeholder="Tipo de servicio" 
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Fecha</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start text-left font-normal"
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {newAppointment.date ? format(newAppointment.date, "d MMM yyyy", { locale: es }) : <span>Seleccionar fecha</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={newAppointment.date}
+                      onSelect={(date) => date && setNewAppointment({...newAppointment, date})}
+                      initialFocus
+                      locale={es}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="time">Hora</Label>
+                <Input 
+                  id="time" 
+                  type="time" 
+                  value={newAppointment.time} 
+                  onChange={e => setNewAppointment({...newAppointment, time: e.target.value})} 
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="duration">Duración (minutos)</Label>
+              <Input 
+                id="duration" 
+                type="number" 
+                value={newAppointment.duration} 
+                onChange={e => setNewAppointment({...newAppointment, duration: parseInt(e.target.value)})} 
+                min={15}
+                step={15}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAddAppointment(false)}>Cancelar</Button>
+            <Button 
+              onClick={handleAddAppointment}
+              disabled={!newAppointment.customerName || !newAppointment.service}
+              className="bg-sinfilas-600 hover:bg-sinfilas-700"
+            >
+              Agendar Cita
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Message Dialog */}
+      <Dialog open={showMessageDialog} onOpenChange={setShowMessageDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Enviar Mensaje a {selectedAppointment?.customerName}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="message">Mensaje</Label>
+              <Input 
+                id="message" 
+                value={message} 
+                onChange={e => setMessage(e.target.value)} 
+                placeholder="Escriba su mensaje aquí..." 
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowMessageDialog(false)}>Cancelar</Button>
+            <Button 
+              onClick={handleSendMessage}
+              disabled={!message.trim()}
+              className="bg-sinfilas-600 hover:bg-sinfilas-700"
+            >
+              Enviar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
