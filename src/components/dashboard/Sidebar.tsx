@@ -123,7 +123,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         </Button>
         <Button 
           variant={activeItem === "soporte" || activeItem === "support" ? "default" : "ghost"} 
-          className="w-full justify-start bg-sinfilas-600 text-white hover:bg-sinfilas-700 hover:text-white"
+          className="w-full justify-start"
           onClick={() => handleSidebarClick("soporte")}
         >
           <HelpCircle className="mr-2 h-4 w-4" />

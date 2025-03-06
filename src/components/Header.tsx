@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Clock, Calendar, Menu } from 'lucide-react';
+import { Clock, Calendar, Menu, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 
@@ -60,6 +60,16 @@ const Header: React.FC<HeaderProps> = ({
 
   const handleGoHome = () => {
     navigate('/');
+  };
+  
+  const handleGuestNavigation = () => {
+    // Set a guest flag in localStorage
+    localStorage.setItem('guestMode', 'true');
+    navigate('/');
+    toast({
+      title: "Modo Invitado",
+      description: "Ahora puedes tomar turnos como invitado",
+    });
   };
 
   return (
@@ -154,13 +164,23 @@ const Header: React.FC<HeaderProps> = ({
                       Cerrar Sesión
                     </Button>
                   ) : (
-                    <Button 
-                      variant="default" 
-                      className="bg-sinfilas-600 hover:bg-sinfilas-700"
-                      onClick={() => navigate('/login')}
-                    >
-                      Iniciar Sesión
-                    </Button>
+                    <>
+                      <Button 
+                        variant="outline" 
+                        className="flex items-center space-x-2"
+                        onClick={handleGuestNavigation}
+                      >
+                        <User className="h-4 w-4" />
+                        <span>Navegar como invitado</span>
+                      </Button>
+                      <Button 
+                        variant="default" 
+                        className="bg-sinfilas-600 hover:bg-sinfilas-700"
+                        onClick={() => navigate('/login')}
+                      >
+                        Iniciar Sesión
+                      </Button>
+                    </>
                   )}
                 </>
               )}
