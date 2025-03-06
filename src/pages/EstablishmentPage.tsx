@@ -1,14 +1,14 @@
-
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Calendar, Clock, Phone, MapPin, Info, User } from 'lucide-react';
+import { Calendar, Clock, Phone, MapPin, Info, User, X, AlertTriangle } from 'lucide-react';
 import Header from '@/components/Header';
 import QueueStatus from '@/components/QueueStatus';
 import Ticket from '@/components/Ticket';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
-// Mock data - in a real app this would come from an API
 const establishmentData = {
   'barberia-x': {
     name: 'Barbería X',
@@ -88,6 +88,8 @@ const EstablishmentPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [activeTab, setActiveTab] = useState<'queue' | 'appointment'>('queue');
   const [hasTicket, setHasTicket] = useState(false);
+  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
+  const { toast } = useToast();
   
   if (!id || !establishmentData[id as keyof typeof establishmentData]) {
     return <div>Establecimiento no encontrado</div>;
@@ -95,7 +97,6 @@ const EstablishmentPage: React.FC = () => {
   
   const establishment = establishmentData[id as keyof typeof establishmentData];
   
-  // Mock ticket data
   const ticketData = {
     ticketNumber: 'B15',
     yourTicket: 'B15',
@@ -107,6 +108,23 @@ const EstablishmentPage: React.FC = () => {
   
   const getNewTicket = () => {
     setHasTicket(true);
+    toast({
+      title: "Turno obtenido",
+      description: `Se te ha asignado el turno ${ticketData.yourTicket}`,
+    });
+  };
+
+  const handleCancelTicket = () => {
+    setIsDeleteAlertOpen(true);
+  };
+
+  const confirmCancelTicket = () => {
+    setHasTicket(false);
+    setIsDeleteAlertOpen(false);
+    toast({
+      title: "Turno cancelado",
+      description: "Tu turno ha sido cancelado exitosamente",
+    });
   };
 
   return (
@@ -137,7 +155,6 @@ const EstablishmentPage: React.FC = () => {
       
       <main className="flex-1 px-4 sm:px-6 lg:px-8 py-8 max-w-6xl mx-auto w-full">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left column - Business details */}
           <div className="lg:col-span-1">
             <div className="glassmorphism rounded-xl p-6 mb-6 animate-fade-in">
               <h2 className="text-xl font-semibold mb-4 flex items-center">
@@ -184,7 +201,6 @@ const EstablishmentPage: React.FC = () => {
             </div>
           </div>
           
-          {/* Right column - Queue status & ticket */}
           <div className="lg:col-span-2">
             <div className="glassmorphism rounded-xl p-2 mb-6 animate-fade-in">
               <div className="flex">
@@ -208,7 +224,7 @@ const EstablishmentPage: React.FC = () => {
                   )}
                   onClick={() => setActiveTab('appointment')}
                 >
-                  Agendar Cita
+                  Mis Citas
                 </button>
               </div>
             </div>
@@ -226,7 +242,17 @@ const EstablishmentPage: React.FC = () => {
                     />
                     
                     <div className="mt-6">
-                      <h3 className="text-lg font-medium text-gray-900 mb-3">Tu Ticket</h3>
+                      <div className="flex justify-between items-center mb-3">
+                        <h3 className="text-lg font-medium text-gray-900">Tu Ticket</h3>
+                        <Button 
+                          variant="destructive" 
+                          size="sm"
+                          onClick={handleCancelTicket}
+                        >
+                          <X className="mr-1 h-4 w-4" />
+                          Cancelar Turno
+                        </Button>
+                      </div>
                       <Ticket
                         ticketNumber={ticketData.yourTicket}
                         businessName={establishment.name}
@@ -265,7 +291,7 @@ const EstablishmentPage: React.FC = () => {
             
             {activeTab === 'appointment' && (
               <div className="glassmorphism rounded-xl p-8 animate-fade-in">
-                <h3 className="text-xl font-medium text-gray-900 mb-4">Agendar una Cita</h3>
+                <h3 className="text-xl font-medium text-gray-900 mb-4">Mis Citas</h3>
                 <p className="text-gray-500 mb-6">
                   Selecciona fecha y hora para agendar una cita en {establishment.name}.
                 </p>
@@ -320,6 +346,29 @@ const EstablishmentPage: React.FC = () => {
           </div>
         </div>
       </footer>
+
+      <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center text-red-600">
+              <AlertTriangle className="h-5 w-5 mr-2" />
+              Cancelar Turno
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              ¿Estás seguro de que deseas cancelar tu turno? Esta acción no se puede deshacer.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction 
+              className="bg-red-600 hover:bg-red-700"
+              onClick={confirmCancelTicket}
+            >
+              Sí, cancelar turno
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

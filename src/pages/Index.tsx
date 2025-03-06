@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import SearchBar from '@/components/SearchBar';
@@ -65,8 +65,10 @@ const demoEstablishments: EstablishmentProps[] = [
 
 const Index: React.FC = () => {
   const navigate = useNavigate();
+  const [showRegisterBusinessSection, setShowRegisterBusinessSection] = useState(true);
   
   const handleRegisterBusiness = () => {
+    setShowRegisterBusinessSection(false);
     navigate('/business');
   };
   
@@ -101,20 +103,22 @@ const Index: React.FC = () => {
           </div>
         </section>
         
-        <section className="mt-20 text-center">
-          <div className="glassmorphism rounded-xl p-8 max-w-4xl mx-auto animate-fade-in">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">¿Eres propietario de un negocio?</h2>
-            <p className="text-gray-600 mb-6 text-balance">
-              Optimiza la gestión de turnos y citas de tu establecimiento. Mejora la experiencia de tus clientes y aumenta la eficiencia.
-            </p>
-            <button 
-              onClick={handleRegisterBusiness}
-              className="bg-sinfilas-600 hover:bg-sinfilas-700 text-white font-medium rounded-lg px-8 py-3 transition-all duration-200 ease-in-out transform hover:scale-105"
-            >
-              Registra tu negocio
-            </button>
-          </div>
-        </section>
+        {showRegisterBusinessSection && (
+          <section className="mt-20 text-center">
+            <div className="glassmorphism rounded-xl p-8 max-w-4xl mx-auto animate-fade-in">
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">¿Eres propietario de un negocio?</h2>
+              <p className="text-gray-600 mb-6 text-balance">
+                Optimiza la gestión de turnos y citas de tu establecimiento. Mejora la experiencia de tus clientes y aumenta la eficiencia.
+              </p>
+              <button 
+                onClick={handleRegisterBusiness}
+                className="bg-sinfilas-600 hover:bg-sinfilas-700 text-white font-medium rounded-lg px-8 py-3 transition-all duration-200 ease-in-out transform hover:scale-105"
+              >
+                Registra tu negocio
+              </button>
+            </div>
+          </section>
+        )}
       </main>
       
       <footer className="bg-white py-6 border-t border-gray-100">
