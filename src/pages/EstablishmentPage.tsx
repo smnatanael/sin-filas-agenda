@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Calendar, Clock, Phone, MapPin, Info, User, X, AlertTriangle } from 'lucide-react';
 import Header from '@/components/Header';
@@ -8,6 +8,9 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 
 const establishmentData = {
   'barberia-x': {
@@ -89,7 +92,15 @@ const EstablishmentPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'queue' | 'appointment'>('queue');
   const [hasTicket, setHasTicket] = useState(false);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
+  const [showGuestInfoDialog, setShowGuestInfoDialog] = useState(false);
+  const [guestInfo, setGuestInfo] = useState({ firstName: '', lastName: '' });
   const { toast } = useToast();
+  const [isGuestMode, setIsGuestMode] = useState(false);
+  
+  useEffect(() => {
+    const guestMode = localStorage.getItem('guestMode');
+    setIsGuestMode(!!guestMode);
+  }, []);
   
   if (!id || !establishmentData[id as keyof typeof establishmentData]) {
     return <div>Establecimiento no encontrado</div>;
@@ -107,11 +118,39 @@ const EstablishmentPage: React.FC = () => {
   };
   
   const getNewTicket = () => {
+    if (isGuestMode) {
+      setShowGuestInfoDialog(true);
+    } else {
+      completeTicketProcess();
+    }
+  };
+
+  const completeTicketProcess = () => {
     setHasTicket(true);
+    setShowGuestInfoDialog(false);
+    
+    let message = `Se te ha asignado el turno ${ticketData.yourTicket}`;
+    if (isGuestMode && guestInfo.firstName) {
+      message = `${guestInfo.firstName} ${guestInfo.lastName}, se te ha asignado el turno ${ticketData.yourTicket}`;
+    }
+    
     toast({
       title: "Turno obtenido",
-      description: `Se te ha asignado el turno ${ticketData.yourTicket}`,
+      description: message,
     });
+  };
+
+  const handleGuestInfoSubmit = () => {
+    if (!guestInfo.firstName || !guestInfo.lastName) {
+      toast({
+        title: "Información incompleta",
+        description: "Por favor ingresa tu nombre y apellido",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    completeTicketProcess();
   };
 
   const handleCancelTicket = () => {
@@ -223,10 +262,16 @@ const EstablishmentPage: React.FC = () => {
                       : "text-gray-600 hover:bg-sinfilas-50"
                   )}
                   onClick={() => setActiveTab('appointment')}
+                  disabled={isGuestMode}
                 >
                   Mis Citas
                 </button>
               </div>
+              {isGuestMode && activeTab !== 'queue' && (
+                <div className="text-xs text-center mt-1 text-amber-600">
+                  El modo invitado solo permite tomar turnos, no agendar citas
+                </div>
+              )}
             </div>
             
             {activeTab === 'queue' && (
@@ -369,6 +414,44 @@ const EstablishmentPage: React.FC = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      
+      <Dialog open={showGuestInfoDialog} onOpenChange={setShowGuestInfoDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Ingresa tus datos</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="firstName">Nombre</Label>
+              <Input 
+                id="firstName" 
+                value={guestInfo.firstName} 
+                onChange={e => setGuestInfo({...guestInfo, firstName: e.target.value})} 
+                placeholder="Tu nombre" 
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="lastName">Apellido</Label>
+              <Input 
+                id="lastName" 
+                value={guestInfo.lastName} 
+                onChange={e => setGuestInfo({...guestInfo, lastName: e.target.value})} 
+                placeholder="Tu apellido" 
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowGuestInfoDialog(false)}>Cancelar</Button>
+            <Button 
+              onClick={handleGuestInfoSubmit}
+              disabled={!guestInfo.firstName || !guestInfo.lastName}
+              className="bg-sinfilas-600 hover:bg-sinfilas-700"
+            >
+              Continuar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
