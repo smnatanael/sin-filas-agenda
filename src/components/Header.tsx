@@ -1,9 +1,16 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Clock, Calendar, Menu, User } from 'lucide-react';
+import { Clock, Calendar, Menu, User, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { 
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator
+} from '@/components/ui/dropdown-menu';
 
 interface HeaderProps {
   logoUrl?: string;
@@ -20,11 +27,17 @@ const Header: React.FC<HeaderProps> = ({
   const location = useLocation();
   const { toast } = useToast();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isBusinessUser, setIsBusinessUser] = useState(false);
 
   useEffect(() => {
     // Check if user is logged in from localStorage
     const user = localStorage.getItem('currentUser');
     setIsLoggedIn(!!user);
+    
+    if (user) {
+      const userData = JSON.parse(user);
+      setIsBusinessUser(userData.role === 'business');
+    }
   }, [location]);
 
   const handleViewAppointments = () => {
@@ -69,6 +82,21 @@ const Header: React.FC<HeaderProps> = ({
     toast({
       title: "Modo Invitado",
       description: "Ahora puedes tomar turnos como invitado",
+    });
+  };
+  
+  const handleGoToDashboard = () => {
+    navigate('/dashboard/home');
+  };
+  
+  const handleLogout = () => {
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('guestMode');
+    setIsLoggedIn(false);
+    navigate('/');
+    toast({
+      title: "Sesión cerrada",
+      description: "Has cerrado sesión correctamente",
     });
   };
 
@@ -120,14 +148,27 @@ const Header: React.FC<HeaderProps> = ({
               ) : (
                 <>
                   {isLoggedIn && (
-                    <Button 
-                      variant="ghost"
-                      onClick={handleViewAppointments}
-                      className="flex items-center space-x-2"
-                    >
-                      <Calendar className="h-4 w-4" />
-                      <span>Mis Citas</span>
-                    </Button>
+                    <>
+                      <Button 
+                        variant="ghost"
+                        onClick={handleViewAppointments}
+                        className="flex items-center space-x-2"
+                      >
+                        <Calendar className="h-4 w-4" />
+                        <span>Mis Citas</span>
+                      </Button>
+                      
+                      {isBusinessUser && (
+                        <Button 
+                          variant="ghost"
+                          onClick={handleGoToDashboard}
+                          className="flex items-center space-x-2"
+                        >
+                          <Settings className="h-4 w-4" />
+                          <span>Mi Dashboard</span>
+                        </Button>
+                      )}
+                    </>
                   )}
                   <Button 
                     variant="ghost"
@@ -148,21 +189,26 @@ const Header: React.FC<HeaderProps> = ({
                     Contacto
                   </Button>
                   {isLoggedIn ? (
-                    <Button 
-                      variant="default" 
-                      className="bg-sinfilas-600 hover:bg-sinfilas-700"
-                      onClick={() => {
-                        localStorage.removeItem('currentUser');
-                        setIsLoggedIn(false);
-                        navigate('/');
-                        toast({
-                          title: "Sesión cerrada",
-                          description: "Has cerrado sesión correctamente",
-                        });
-                      }}
-                    >
-                      Cerrar Sesión
-                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="flex items-center space-x-2">
+                          <User className="h-4 w-4" />
+                          <span>Mi Perfil</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => navigate('/profile')}>
+                          Perfil
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => navigate('/settings')}>
+                          Configuración
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={handleLogout} className="text-red-500">
+                          Cerrar Sesión
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   ) : (
                     <>
                       <Button 

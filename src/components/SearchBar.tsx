@@ -1,21 +1,63 @@
-
 import React, { useState, useEffect } from 'react';
 import { Search, MapPin, Clock, Navigation } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
+import { establishmentData } from '@/data/establishmentData';
 
 const SearchBar: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [location, setLocation] = useState('');
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleSearch = () => {
+    if (!searchTerm && !location) {
+      toast({
+        title: "Búsqueda",
+        description: "Mostrando todos los establecimientos disponibles",
+      });
+      return;
+    }
+
+    const filteredEstablishments = Object.entries(establishmentData).filter(([id, establishment]) => {
+      const matchesSearchTerm = !searchTerm || 
+        establishment.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        establishment.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        establishment.services.some(service => service.toLowerCase().includes(searchTerm.toLowerCase()));
+      
+      const matchesLocation = !location || establishment.address.toLowerCase().includes(location.toLowerCase());
+      
+      return matchesSearchTerm && matchesLocation;
+    });
+
+    if (filteredEstablishments.length === 0) {
+      toast({
+        title: "Sin resultados",
+        description: "No se encontraron establecimientos que coincidan con tu búsqueda",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    if (filteredEstablishments.length === 1) {
+      const [id] = filteredEstablishments[0];
+      navigate(`/establishment/${id}`);
+      return;
+    }
+    
     toast({
       title: "Búsqueda",
-      description: `Buscando "${searchTerm}" cerca de "${location || 'cualquier ubicación'}"`,
+      description: `Se encontraron ${filteredEstablishments.length} establecimientos`,
     });
-    // Aquí iría la lógica de búsqueda real que filtraría los establecimientos
+    
+    console.log('Filtered establishments:', filteredEstablishments);
+    
+    const event = new CustomEvent('searchResults', { 
+      detail: { results: filteredEstablishments } 
+    });
+    window.dispatchEvent(event);
   };
 
   const getCurrentLocation = () => {
@@ -33,9 +75,6 @@ const SearchBar: React.FC = () => {
     
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        // Normalmente aquí haríamos una llamada a la API de Google Maps para obtener
-        // la dirección basada en las coordenadas, pero para este ejemplo simplemente
-        // usaremos las coordenadas
         const { latitude, longitude } = position.coords;
         setLocation(`${latitude.toFixed(4)}, ${longitude.toFixed(4)}`);
         
@@ -72,6 +111,12 @@ const SearchBar: React.FC = () => {
     );
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
   return (
     <div className="w-full max-w-4xl mx-auto glassmorphism rounded-xl p-2 animate-scale-up">
       <div className="flex flex-col md:flex-row gap-2">
@@ -85,6 +130,7 @@ const SearchBar: React.FC = () => {
             placeholder="Buscar establecimiento..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyDown={handleKeyDown}
           />
         </div>
         
@@ -98,6 +144,7 @@ const SearchBar: React.FC = () => {
             placeholder="Ubicación..."
             value={location}
             onChange={(e) => setLocation(e.target.value)}
+            onKeyDown={handleKeyDown}
           />
           <button 
             className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700"

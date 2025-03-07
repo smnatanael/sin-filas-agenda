@@ -44,7 +44,7 @@ const LoginPage: React.FC = () => {
         
         // If business user, redirect to dashboard
         if (user.role === 'business') {
-          navigate('/dashboard');
+          navigate('/dashboard/home');
         } else {
           navigate('/');
         }

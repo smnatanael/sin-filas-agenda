@@ -31,21 +31,27 @@ const Sidebar: React.FC<SidebarProps> = ({
     // Navigate to appropriate route
     switch(item) {
       case "dashboard":
+      case "home":
         navigate('/dashboard/home');
         break;
       case "turnos":
+      case "turns":
         navigate('/dashboard/turns');
         break;
       case "citas":
+      case "appointments":
         navigate('/dashboard/appointments');
         break;
       case "clientes":
+      case "clients":
         navigate('/dashboard/clients');
         break;
       case "configuracion":
+      case "settings":
         navigate('/dashboard/settings');
         break;
       case "soporte":
+      case "support":
         navigate('/dashboard/support');
         break;
       case "logout":
