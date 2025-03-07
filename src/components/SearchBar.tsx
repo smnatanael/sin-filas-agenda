@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Search, MapPin, Clock, Navigation } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -24,10 +25,9 @@ const SearchBar: React.FC = () => {
     const filteredEstablishments = Object.entries(establishmentData).filter(([id, establishment]) => {
       const matchesSearchTerm = !searchTerm || 
         establishment.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        establishment.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
         establishment.services.some(service => service.toLowerCase().includes(searchTerm.toLowerCase()));
       
-      const matchesLocation = !location || establishment.address.toLowerCase().includes(location.toLowerCase());
+      const matchesLocation = !location || establishment.location.toLowerCase().includes(location.toLowerCase());
       
       return matchesSearchTerm && matchesLocation;
     });
