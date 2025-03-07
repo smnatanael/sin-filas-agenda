@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Calendar, Clock, Phone, MapPin, Info, User, X, AlertTriangle } from 'lucide-react';
 import Header from '@/components/Header';
 import QueueStatus from '@/components/QueueStatus';
@@ -89,17 +89,23 @@ const establishmentData = {
 
 const EstablishmentPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'queue' | 'appointment'>('queue');
   const [hasTicket, setHasTicket] = useState(false);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
   const [showGuestInfoDialog, setShowGuestInfoDialog] = useState(false);
+  const [showLoginPromptDialog, setShowLoginPromptDialog] = useState(false);
   const [guestInfo, setGuestInfo] = useState({ firstName: '', lastName: '' });
   const { toast } = useToast();
   const [isGuestMode, setIsGuestMode] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   
   useEffect(() => {
     const guestMode = localStorage.getItem('guestMode');
     setIsGuestMode(!!guestMode);
+    
+    const currentUser = localStorage.getItem('currentUser');
+    setIsLoggedIn(!!currentUser);
   }, []);
   
   if (!id || !establishmentData[id as keyof typeof establishmentData]) {
@@ -151,6 +157,20 @@ const EstablishmentPage: React.FC = () => {
     }
     
     completeTicketProcess();
+  };
+
+  const handleTabChange = (tab: 'queue' | 'appointment') => {
+    if (tab === 'appointment' && isGuestMode && !isLoggedIn) {
+      setShowLoginPromptDialog(true);
+    } else {
+      setActiveTab(tab);
+    }
+  };
+
+  const handleLoginRedirect = () => {
+    setShowLoginPromptDialog(false);
+    localStorage.setItem('redirectAfterLogin', id || '');
+    navigate('/login');
   };
 
   const handleCancelTicket = () => {
@@ -250,7 +270,7 @@ const EstablishmentPage: React.FC = () => {
                       ? "bg-sinfilas-600 text-white font-medium" 
                       : "text-gray-600 hover:bg-sinfilas-50"
                   )}
-                  onClick={() => setActiveTab('queue')}
+                  onClick={() => handleTabChange('queue')}
                 >
                   Estado de la Fila
                 </button>
@@ -261,17 +281,11 @@ const EstablishmentPage: React.FC = () => {
                       ? "bg-sinfilas-600 text-white font-medium" 
                       : "text-gray-600 hover:bg-sinfilas-50"
                   )}
-                  onClick={() => setActiveTab('appointment')}
-                  disabled={isGuestMode}
+                  onClick={() => handleTabChange('appointment')}
                 >
                   Mis Citas
                 </button>
               </div>
-              {isGuestMode && activeTab !== 'queue' && (
-                <div className="text-xs text-center mt-1 text-amber-600">
-                  El modo invitado solo permite tomar turnos, no agendar citas
-                </div>
-              )}
             </div>
             
             {activeTab === 'queue' && (
@@ -448,6 +462,30 @@ const EstablishmentPage: React.FC = () => {
               className="bg-sinfilas-600 hover:bg-sinfilas-700"
             >
               Continuar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      <Dialog open={showLoginPromptDialog} onOpenChange={setShowLoginPromptDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Iniciar sesión requerido</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-gray-600 mb-4">
+              Para agendar citas necesitas iniciar sesión. ¿Deseas iniciar sesión ahora?
+            </p>
+          </div>
+          <DialogFooter className="flex space-x-2">
+            <Button variant="outline" onClick={() => setShowLoginPromptDialog(false)}>
+              No, continuar como invitado
+            </Button>
+            <Button 
+              onClick={handleLoginRedirect}
+              className="bg-sinfilas-600 hover:bg-sinfilas-700"
+            >
+              Iniciar sesión
             </Button>
           </DialogFooter>
         </DialogContent>

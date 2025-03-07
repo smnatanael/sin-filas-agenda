@@ -57,6 +57,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         
         // Clear user session
         localStorage.removeItem('currentUser');
+        localStorage.removeItem('guestMode');
         
         // Navigate to home after a brief delay
         setTimeout(() => {

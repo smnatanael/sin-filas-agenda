@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { Outlet } from 'react-router-dom';
 import Sidebar from '@/components/dashboard/Sidebar';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import DashboardTabs from '@/components/dashboard/DashboardTabs';
@@ -26,6 +27,9 @@ const BusinessDashboard: React.FC = () => {
             activeTab={activeTab}
             setActiveTab={setActiveTab}
           />
+          
+          {/* This renders child routes */}
+          <Outlet />
         </div>
       </div>
     </div>
