@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { MapPin } from 'lucide-react';
 import Header from '@/components/Header';
 import { Establishment } from '@/data/establishmentData';
 
