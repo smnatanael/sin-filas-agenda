@@ -67,8 +67,8 @@ const Index: React.FC = () => {
             {establishmentsArray.map(([id, establishment]) => (
               <EstablishmentCard 
                 key={id}
-                id={id as string}
-                establishment={establishment}
+                id={id}
+                data={establishment}
                 onClick={() => navigate(`/establishment/${id}`)}
               />
             ))}
