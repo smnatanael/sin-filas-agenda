@@ -248,70 +248,71 @@ const Clients: React.FC = () => {
                                 {client.status === 'active' ? 'Activo' : 'Inactivo'}
                               </Badge>
                             </div>
-                          </td>
-                          <td className="py-3">
-                            <div>
-                              <p className="text-sm">{client.email}</p>
-                              <p className="text-sm text-gray-500">{client.phone}</p>
+                          </div>
+                        </td>
+                        <td className="py-3">
+                          <div>
+                            <p className="text-sm">{client.email}</p>
+                            <p className="text-sm text-gray-500">{client.phone}</p>
+                          </div>
+                        </td>
+                        <td className="py-3">
+                          {client.visits}
+                        </td>
+                        <td className="py-3">
+                          {formatDate(client.lastVisit)}
+                        </td>
+                        <td className="py-3">
+                          {client.nextAppointment ? (
+                            <div className="flex items-center">
+                              <Calendar className="h-4 w-4 mr-1 text-sinfilas-600" />
+                              <span>{formatDate(client.nextAppointment)}</span>
                             </div>
-                          </td>
-                          <td className="py-3">
-                            {client.visits}
-                          </td>
-                          <td className="py-3">
-                            {formatDate(client.lastVisit)}
-                          </td>
-                          <td className="py-3">
-                            {client.nextAppointment ? (
-                              <div className="flex items-center">
-                                <Calendar className="h-4 w-4 mr-1 text-sinfilas-600" />
-                                <span>{formatDate(client.nextAppointment)}</span>
-                              </div>
-                            ) : (
-                              'No agendada'
-                            )}
-                          </td>
-                          <td className="py-3">
-                            <div className="flex space-x-2">
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                                onClick={() => handleOpenChat(client)}
-                              >
-                                <MessageCircle className="h-4 w-4" />
-                              </Button>
-                              
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button variant="outline" size="sm">
-                                    <MoreHorizontal className="h-4 w-4" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent>
-                                  <DropdownMenuItem>
-                                    <Info className="h-4 w-4 mr-2" />
-                                    <span>Ver detalles</span>
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem>
-                                    <Calendar className="h-4 w-4 mr-2" />
-                                    <span>Agendar cita</span>
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem>
-                                    <Clock className="h-4 w-4 mr-2" />
-                                    <span>Asignar turno</span>
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
+                          ) : (
+                            'No agendada'
+                          )}
+                        </td>
+                        <td className="py-3">
+                          <div className="flex space-x-2">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handleOpenChat(client)}
+                            >
+                              <MessageCircle className="h-4 w-4" />
+                            </Button>
+                            
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="outline" size="sm">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent>
+                                <DropdownMenuItem>
+                                  <Info className="h-4 w-4 mr-2" />
+                                  <span>Ver detalles</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem>
+                                  <Calendar className="h-4 w-4 mr-2" />
+                                  <span>Agendar cita</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem>
+                                  <Clock className="h-4 w-4 mr-2" />
+                                  <span>Asignar turno</span>
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <Card className="shadow-md">
