@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Users, MessageCircle, Search, Clock, Calendar, Info, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -6,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import Sidebar from '@/components/dashboard/Sidebar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
@@ -187,72 +185,68 @@ const Clients: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen">
-      <Sidebar activeSidebarItem="clientes" />
-      
-      <div className="flex-1 p-4 md:p-8 bg-gradient-to-b from-white to-sinfilas-50">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-            <h1 className="text-3xl font-bold text-gray-900">Clientes</h1>
-            <div className="w-full md:w-auto flex">
-              <div className="relative w-full md:w-64">
-                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder="Buscar cliente..."
-                  value={searchTerm}
-                  onChange={handleSearch}
-                  className="pl-8"
-                />
-              </div>
+    <div className="flex-1 p-4 md:p-8 bg-gradient-to-b from-white to-sinfilas-50">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+          <h1 className="text-3xl font-bold text-gray-900">Clientes</h1>
+          <div className="w-full md:w-auto flex">
+            <div className="relative w-full md:w-64">
+              <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                placeholder="Buscar cliente..."
+                value={searchTerm}
+                onChange={handleSearch}
+                className="pl-8"
+              />
             </div>
           </div>
-          
-          <Card className="shadow-md mb-8">
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Users className="h-5 w-5 mr-2 text-sinfilas-600" />
-                Listado de Clientes
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full text-left">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="pb-3 text-gray-500 font-medium">Cliente</th>
-                      <th className="pb-3 text-gray-500 font-medium">Contacto</th>
-                      <th className="pb-3 text-gray-500 font-medium">Visitas</th>
-                      <th className="pb-3 text-gray-500 font-medium">Última Visita</th>
-                      <th className="pb-3 text-gray-500 font-medium">Próxima Cita</th>
-                      <th className="pb-3 text-gray-500 font-medium">Acciones</th>
+        </div>
+        
+        <Card className="shadow-md mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Users className="h-5 w-5 mr-2 text-sinfilas-600" />
+              Listado de Clientes
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="border-b">
+                    <th className="pb-3 text-gray-500 font-medium">Cliente</th>
+                    <th className="pb-3 text-gray-500 font-medium">Contacto</th>
+                    <th className="pb-3 text-gray-500 font-medium">Visitas</th>
+                    <th className="pb-3 text-gray-500 font-medium">Última Visita</th>
+                    <th className="pb-3 text-gray-500 font-medium">Próxima Cita</th>
+                    <th className="pb-3 text-gray-500 font-medium">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredClients.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="py-4 text-center text-gray-500">
+                        No se encontraron clientes con la búsqueda actual
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {filteredClients.length === 0 ? (
-                      <tr>
-                        <td colSpan={6} className="py-4 text-center text-gray-500">
-                          No se encontraron clientes con la búsqueda actual
-                        </td>
-                      </tr>
-                    ) : (
-                      filteredClients.map(client => (
-                        <tr key={client.id} className="border-b">
-                          <td className="py-3">
-                            <div className="flex items-center">
-                              <Avatar className="h-8 w-8 mr-2">
-                                <AvatarImage src={client.avatar} alt={client.name} />
-                                <AvatarFallback>{client.name.charAt(0)}</AvatarFallback>
-                              </Avatar>
-                              <div>
-                                <p className="font-medium">{client.name}</p>
-                                <Badge variant="outline" className={
-                                  client.status === 'active' 
-                                    ? 'bg-green-50 text-green-700 border-green-100'
-                                    : 'bg-gray-50 text-gray-700 border-gray-100'
-                                }>
-                                  {client.status === 'active' ? 'Activo' : 'Inactivo'}
-                                </Badge>
-                              </div>
+                  ) : (
+                    filteredClients.map(client => (
+                      <tr key={client.id} className="border-b">
+                        <td className="py-3">
+                          <div className="flex items-center">
+                            <Avatar className="h-8 w-8 mr-2">
+                              <AvatarImage src={client.avatar} alt={client.name} />
+                              <AvatarFallback>{client.name.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <p className="font-medium">{client.name}</p>
+                              <Badge variant="outline" className={
+                                client.status === 'active' 
+                                  ? 'bg-green-50 text-green-700 border-green-100'
+                                  : 'bg-gray-50 text-gray-700 border-gray-100'
+                              }>
+                                {client.status === 'active' ? 'Activo' : 'Inactivo'}
+                              </Badge>
                             </div>
                           </td>
                           <td className="py-3">
@@ -418,7 +412,6 @@ const Clients: React.FC = () => {
             </Card>
           </div>
         </div>
-      </div>
       
       {/* Chat Dialog */}
       <Dialog open={showChatDialog} onOpenChange={setShowChatDialog}>
