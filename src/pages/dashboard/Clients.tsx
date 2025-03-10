@@ -312,106 +312,106 @@ const Clients: React.FC = () => {
               </div>
             </CardContent>
           </Card>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <Card className="shadow-md">
+            <CardHeader>
+              <CardTitle>Clientes Activos</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {clients.filter(c => c.status === 'active').slice(0, 4).map(client => (
+                  <div key={client.id} className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <Avatar className="h-10 w-10 mr-3">
+                        <AvatarImage src={client.avatar} alt={client.name} />
+                        <AvatarFallback>{client.name.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="font-medium">{client.name}</p>
+                        <p className="text-sm text-gray-500">
+                          {client.activeTurn && (
+                            <span className="flex items-center text-sinfilas-600">
+                              <Clock className="h-3 w-3 mr-1" />
+                              Turno activo
+                            </span>
+                          )}
+                          {client.nextAppointment && !client.activeTurn && (
+                            <span className="flex items-center text-gray-600">
+                              <Calendar className="h-3 w-3 mr-1" />
+                              Próxima cita: {formatDate(client.nextAppointment)}
+                            </span>
+                          )}
+                          {!client.nextAppointment && !client.activeTurn && (
+                            <span>Sin actividad programada</span>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => handleOpenChat(client)}
+                    >
+                      <MessageCircle className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <Card className="shadow-md">
-              <CardHeader>
-                <CardTitle>Clientes Activos</CardTitle>
-              </CardHeader>
-              <CardContent>
+          <Card className="shadow-md">
+            <CardHeader>
+              <CardTitle>Mensajes Recientes</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {Object.values(mockMessages).flat().length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  No hay mensajes recientes
+                </div>
+              ) : (
                 <div className="space-y-4">
-                  {clients.filter(c => c.status === 'active').slice(0, 4).map(client => (
-                    <div key={client.id} className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <Avatar className="h-10 w-10 mr-3">
-                          <AvatarImage src={client.avatar} alt={client.name} />
-                          <AvatarFallback>{client.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="font-medium">{client.name}</p>
-                          <p className="text-sm text-gray-500">
-                            {client.activeTurn && (
-                              <span className="flex items-center text-sinfilas-600">
-                                <Clock className="h-3 w-3 mr-1" />
-                                Turno activo
-                              </span>
-                            )}
-                            {client.nextAppointment && !client.activeTurn && (
-                              <span className="flex items-center text-gray-600">
-                                <Calendar className="h-3 w-3 mr-1" />
-                                Próxima cita: {formatDate(client.nextAppointment)}
-                              </span>
-                            )}
-                            {!client.nextAppointment && !client.activeTurn && (
-                              <span>Sin actividad programada</span>
-                            )}
+                  {Object.values(mockMessages)
+                    .flat()
+                    .sort((a, b) => b.date.getTime() - a.date.getTime())
+                    .slice(0, 4)
+                    .map(message => {
+                      const client = clients.find(c => c.id === message.clientId);
+                      if (!client) return null;
+                      
+                      return (
+                        <div key={message.id} className="p-3 border rounded-lg">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center">
+                              <Avatar className="h-8 w-8 mr-2">
+                                <AvatarImage src={client.avatar} alt={client.name} />
+                                <AvatarFallback>{client.name.charAt(0)}</AvatarFallback>
+                              </Avatar>
+                              <p className="font-medium">{client.name}</p>
+                            </div>
+                            <span className="text-xs text-gray-500">
+                              {message.date.toLocaleTimeString('es-ES', {
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })}
+                            </span>
+                          </div>
+                          <p className="text-sm">
+                            {message.content.length > 100 
+                              ? `${message.content.substring(0, 100)}...` 
+                              : message.content
+                            }
                           </p>
                         </div>
-                      </div>
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => handleOpenChat(client)}
-                      >
-                        <MessageCircle className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
+                      );
+                    })}
                 </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="shadow-md">
-              <CardHeader>
-                <CardTitle>Mensajes Recientes</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {Object.values(mockMessages).flat().length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
-                    No hay mensajes recientes
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {Object.values(mockMessages)
-                      .flat()
-                      .sort((a, b) => b.date.getTime() - a.date.getTime())
-                      .slice(0, 4)
-                      .map(message => {
-                        const client = clients.find(c => c.id === message.clientId);
-                        if (!client) return null;
-                        
-                        return (
-                          <div key={message.id} className="p-3 border rounded-lg">
-                            <div className="flex items-center justify-between mb-2">
-                              <div className="flex items-center">
-                                <Avatar className="h-8 w-8 mr-2">
-                                  <AvatarImage src={client.avatar} alt={client.name} />
-                                  <AvatarFallback>{client.name.charAt(0)}</AvatarFallback>
-                                </Avatar>
-                                <p className="font-medium">{client.name}</p>
-                              </div>
-                              <span className="text-xs text-gray-500">
-                                {message.date.toLocaleTimeString('es-ES', {
-                                  hour: '2-digit',
-                                  minute: '2-digit'
-                                })}
-                              </span>
-                            </div>
-                            <p className="text-sm">
-                              {message.content.length > 100 
-                                ? `${message.content.substring(0, 100)}...` 
-                                : message.content
-                              }
-                            </p>
-                          </div>
-                        );
-                      })}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
+      </div>
       
       {/* Chat Dialog */}
       <Dialog open={showChatDialog} onOpenChange={setShowChatDialog}>
