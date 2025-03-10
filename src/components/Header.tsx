@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Clock, Calendar, Menu, User, Settings } from 'lucide-react';
+import { Clock, Calendar, Menu, User, Settings, ListChecks } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { 
@@ -43,8 +43,8 @@ const Header: React.FC<HeaderProps> = ({
   const handleViewAppointments = () => {
     navigate('/appointments');
     toast({
-      title: "Mis Citas",
-      description: "Visualizando tus citas agendadas",
+      title: "Citas y Turnos",
+      description: "Visualizando tus citas y turnos",
     });
   };
 
@@ -154,8 +154,8 @@ const Header: React.FC<HeaderProps> = ({
                         onClick={handleViewAppointments}
                         className="flex items-center space-x-2"
                       >
-                        <Calendar className="h-4 w-4" />
-                        <span>Mis Citas</span>
+                        <ListChecks className="h-4 w-4" />
+                        <span>Citas y Turnos</span>
                       </Button>
                       
                       {isBusinessUser && (
@@ -197,11 +197,11 @@ const Header: React.FC<HeaderProps> = ({
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => navigate('/profile')}>
+                        <DropdownMenuItem onClick={() => navigate('/settings')}>
                           Perfil
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => navigate('/settings')}>
-                          Configuración
+                        <DropdownMenuItem onClick={() => navigate('/appointments')}>
+                          Citas y Turnos
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={handleLogout} className="text-red-500">

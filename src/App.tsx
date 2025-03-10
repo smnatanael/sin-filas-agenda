@@ -17,6 +17,8 @@ import Appointments from "./pages/dashboard/Appointments";
 import Clients from "./pages/dashboard/Clients";
 import Settings from "./pages/dashboard/Settings";
 import Support from "./pages/dashboard/Support";
+import UserAppointments from "./pages/UserAppointments";
+import UserSettings from "./pages/UserSettings";
 
 // Mock user authentication
 export const MOCK_USERS = [
@@ -49,6 +51,8 @@ const App = () => (
           <Route path="/dashboard/clients" element={<Clients />} />
           <Route path="/dashboard/settings" element={<Settings />} />
           <Route path="/dashboard/support" element={<Support />} />
+          <Route path="/appointments" element={<UserAppointments />} />
+          <Route path="/settings" element={<UserSettings />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
