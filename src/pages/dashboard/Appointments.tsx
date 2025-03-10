@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Calendar as CalendarIcon, Clock, MessageCircle, X, Plus, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -209,13 +208,15 @@ const Appointments: React.FC = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <Calendar
-                  mode="single"
-                  selected={selectedDate}
-                  onSelect={(date) => date && setSelectedDate(date)}
-                  className="rounded-md border"
-                  locale={es}
-                />
+                <div className="flex justify-center">
+                  <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={(date) => date && setSelectedDate(date)}
+                    className="rounded-md border w-full max-w-xs transform scale-110 mx-auto"
+                    locale={es}
+                  />
+                </div>
                 
                 <div className="mt-6">
                   <h3 className="font-medium text-gray-900 mb-3">Resumen del día</h3>
@@ -387,7 +388,6 @@ const Appointments: React.FC = () => {
         </div>
       </div>
       
-      {/* Add Appointment Dialog */}
       <Dialog open={showAddAppointment} onOpenChange={setShowAddAppointment}>
         <DialogContent>
           <DialogHeader>
@@ -490,7 +490,6 @@ const Appointments: React.FC = () => {
         </DialogContent>
       </Dialog>
       
-      {/* Message Dialog */}
       <Dialog open={showMessageDialog} onOpenChange={setShowMessageDialog}>
         <DialogContent>
           <DialogHeader>

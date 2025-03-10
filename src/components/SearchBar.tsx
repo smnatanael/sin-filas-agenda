@@ -13,6 +13,15 @@ const SearchBar: React.FC = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  // Función para normalizar el texto (elimina acentos y convierte a minúsculas)
+  const normalizeText = (text: string): string => {
+    return text
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^\w\s]/gi, '');
+  };
+
   const handleSearch = () => {
     if (!searchTerm && !location) {
       toast({
@@ -22,15 +31,26 @@ const SearchBar: React.FC = () => {
       return;
     }
 
+    const normalizedSearchTerm = normalizeText(searchTerm);
+    const normalizedLocation = normalizeText(location);
+
     const filteredEstablishments = Object.entries(establishmentData).filter(([id, establishment]) => {
-      const matchesSearchTerm = !searchTerm || 
-        establishment.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        establishment.services.some(service => 
-          service.toLowerCase().includes(searchTerm.toLowerCase())
-        );
+      const normalizedName = normalizeText(establishment.name);
+      const normalizedEstablishmentLocation = normalizeText(establishment.location);
       
-      const matchesLocation = !location || 
-        establishment.location.toLowerCase().includes(location.toLowerCase());
+      // Comprobar si algún servicio coincide con el término de búsqueda
+      const matchesService = establishment.services.some(service => 
+        normalizeText(service).includes(normalizedSearchTerm)
+      );
+      
+      // El establecimiento coincide si su nombre o alguno de sus servicios contiene el término de búsqueda
+      const matchesSearchTerm = !normalizedSearchTerm || 
+        normalizedName.includes(normalizedSearchTerm) ||
+        matchesService;
+      
+      // El establecimiento coincide si su ubicación contiene el término de ubicación buscado
+      const matchesLocation = !normalizedLocation || 
+        normalizedEstablishmentLocation.includes(normalizedLocation);
       
       return matchesSearchTerm && matchesLocation;
     });
