@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Clock, MessageCircle, X, UserPlus, ChevronRight, ChevronLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,7 +7,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import Sidebar from '@/components/dashboard/Sidebar';
 
 interface Turn {
   id: string;
@@ -161,190 +159,185 @@ const CurrentTurns: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen">
-      <Sidebar activeSidebarItem="turnos" />
-      
-      <div className="flex-1 p-4 md:p-8 bg-gradient-to-b from-white to-sinfilas-50">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold text-gray-900">Turnos Actuales</h1>
-            <Button onClick={() => setShowAddTurn(true)} className="bg-sinfilas-600 hover:bg-sinfilas-700">
-              <UserPlus className="mr-2 h-4 w-4" />
-              Nuevo Turno
-            </Button>
-          </div>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <Card className="shadow-md">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Clock className="h-5 w-5 mr-2 text-sinfilas-600" />
-                  En Progreso
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {turns.filter(turn => turn.status === 'inProgress').length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
-                    No hay turnos en progreso actualmente
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {turns.filter(turn => turn.status === 'inProgress').map(turn => (
-                      <div key={turn.id} className="p-4 border rounded-lg bg-green-50">
-                        <div className="flex justify-between items-start mb-2">
-                          <div>
-                            <h3 className="font-medium text-gray-900">{turn.name}</h3>
-                            <p className="text-sm text-gray-600">{turn.service}</p>
-                          </div>
-                          {getStatusBadge(turn.status)}
-                        </div>
-                        <div className="flex justify-between items-center text-sm text-gray-600 mt-2">
-                          <div className="flex items-center">
-                            <Clock className="h-4 w-4 mr-1" />
-                            <span>Tiempo est.: {turn.estimatedTime} min</span>
-                          </div>
-                          <div className="flex space-x-2">
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              onClick={() => handleOpenMessage(turn)}
-                            >
-                              <MessageCircle className="h-4 w-4" />
-                            </Button>
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              className="text-green-600 border-green-200 hover:bg-green-50"
-                              onClick={() => handleStatusChange(turn.id, 'completed')}
-                            >
-                              Completado
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-            
-            <Card className="shadow-md">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Clock className="h-5 w-5 mr-2 text-sinfilas-600" />
-                  Lista de Espera ({turns.filter(turn => turn.status === 'waiting').length})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {turns.filter(turn => turn.status === 'waiting').length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
-                    No hay turnos en espera actualmente
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {turns.filter(turn => turn.status === 'waiting')
-                      .sort((a, b) => a.position - b.position)
-                      .map(turn => (
-                      <div key={turn.id} className="p-4 border rounded-lg">
-                        <div className="flex justify-between items-start mb-2">
-                          <div>
-                            <h3 className="font-medium text-gray-900">{turn.name}</h3>
-                            <p className="text-sm text-gray-600">{turn.service}</p>
-                          </div>
-                          <div className="flex items-center">
-                            {getStatusBadge(turn.status)}
-                            <Button 
-                              variant="ghost" 
-                              size="sm"
-                              className="ml-1 text-red-500 hover:text-red-700"
-                              onClick={() => handleRemoveTurn(turn.id)}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                        <div className="flex justify-between items-center text-sm text-gray-600 mt-2">
-                          <div className="flex items-center">
-                            <Clock className="h-4 w-4 mr-1" />
-                            <span>Espera aprox: {turn.waitingTime} min</span>
-                          </div>
-                          <div className="flex space-x-2">
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              onClick={() => handleOpenMessage(turn)}
-                            >
-                              <MessageCircle className="h-4 w-4" />
-                            </Button>
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              className="text-green-600 border-green-200 hover:bg-green-50"
-                              onClick={() => handleStatusChange(turn.id, 'inProgress')}
-                            >
-                              Iniciar
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-          
-          <Card className="shadow-md mb-8">
-            <CardHeader className="pb-0">
-              <div className="flex justify-between items-center">
-                <CardTitle>Turnos Completados Hoy</CardTitle>
-                <div className="flex space-x-2">
-                  <Button variant="outline" size="sm">
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
+    <div className="flex-1 p-4 md:p-8 bg-gradient-to-b from-white to-sinfilas-50">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold text-gray-900">Turnos Actuales</h1>
+          <Button onClick={() => setShowAddTurn(true)} className="bg-sinfilas-600 hover:bg-sinfilas-700">
+            <UserPlus className="mr-2 h-4 w-4" />
+            Nuevo Turno
+          </Button>
+        </div>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <Card className="shadow-md">
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Clock className="h-5 w-5 mr-2 text-sinfilas-600" />
+                En Progreso
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full text-left mt-4">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="pb-3 text-gray-500 font-medium">Cliente</th>
-                      <th className="pb-3 text-gray-500 font-medium">Servicio</th>
-                      <th className="pb-3 text-gray-500 font-medium">Duración</th>
-                      <th className="pb-3 text-gray-500 font-medium">Estado</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {turns.filter(turn => turn.status === 'completed').length === 0 ? (
-                      <tr>
-                        <td colSpan={4} className="py-4 text-center text-gray-500">
-                          No hay turnos completados para hoy
-                        </td>
-                      </tr>
-                    ) : (
-                      turns.filter(turn => turn.status === 'completed').map(turn => (
-                        <tr key={turn.id} className="border-b">
-                          <td className="py-3">{turn.name}</td>
-                          <td className="py-3">{turn.service}</td>
-                          <td className="py-3">{turn.estimatedTime} min</td>
-                          <td className="py-3">{getStatusBadge(turn.status)}</td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
+              {turns.filter(turn => turn.status === 'inProgress').length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  No hay turnos en progreso actualmente
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {turns.filter(turn => turn.status === 'inProgress').map(turn => (
+                    <div key={turn.id} className="p-4 border rounded-lg bg-green-50">
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <h3 className="font-medium text-gray-900">{turn.name}</h3>
+                          <p className="text-sm text-gray-600">{turn.service}</p>
+                        </div>
+                        {getStatusBadge(turn.status)}
+                      </div>
+                      <div className="flex justify-between items-center text-sm text-gray-600 mt-2">
+                        <div className="flex items-center">
+                          <Clock className="h-4 w-4 mr-1" />
+                          <span>Tiempo est.: {turn.estimatedTime} min</span>
+                        </div>
+                        <div className="flex space-x-2">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleOpenMessage(turn)}
+                          >
+                            <MessageCircle className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            className="text-green-600 border-green-200 hover:bg-green-50"
+                            onClick={() => handleStatusChange(turn.id, 'completed')}
+                          >
+                            Completado
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+          
+          <Card className="shadow-md">
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Clock className="h-5 w-5 mr-2 text-sinfilas-600" />
+                Lista de Espera ({turns.filter(turn => turn.status === 'waiting').length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {turns.filter(turn => turn.status === 'waiting').length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  No hay turnos en espera actualmente
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {turns.filter(turn => turn.status === 'waiting')
+                    .sort((a, b) => a.position - b.position)
+                    .map(turn => (
+                    <div key={turn.id} className="p-4 border rounded-lg">
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <h3 className="font-medium text-gray-900">{turn.name}</h3>
+                          <p className="text-sm text-gray-600">{turn.service}</p>
+                        </div>
+                        <div className="flex items-center">
+                          {getStatusBadge(turn.status)}
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            className="ml-1 text-red-500 hover:text-red-700"
+                            onClick={() => handleRemoveTurn(turn.id)}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-center text-sm text-gray-600 mt-2">
+                        <div className="flex items-center">
+                          <Clock className="h-4 w-4 mr-1" />
+                          <span>Espera aprox: {turn.waitingTime} min</span>
+                        </div>
+                        <div className="flex space-x-2">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleOpenMessage(turn)}
+                          >
+                            <MessageCircle className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            className="text-green-600 border-green-200 hover:bg-green-50"
+                            onClick={() => handleStatusChange(turn.id, 'inProgress')}
+                          >
+                            Iniciar
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
+        
+        <Card className="shadow-md mb-8">
+          <CardHeader className="pb-0">
+            <div className="flex justify-between items-center">
+              <CardTitle>Turnos Completados Hoy</CardTitle>
+              <div className="flex space-x-2">
+                <Button variant="outline" size="sm">
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <Button variant="outline" size="sm">
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left mt-4">
+                <thead>
+                  <tr className="border-b">
+                    <th className="pb-3 text-gray-500 font-medium">Cliente</th>
+                    <th className="pb-3 text-gray-500 font-medium">Servicio</th>
+                    <th className="pb-3 text-gray-500 font-medium">Duración</th>
+                    <th className="pb-3 text-gray-500 font-medium">Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {turns.filter(turn => turn.status === 'completed').length === 0 ? (
+                    <tr>
+                      <td colSpan={4} className="py-4 text-center text-gray-500">
+                        No hay turnos completados para hoy
+                      </td>
+                    </tr>
+                  ) : (
+                    turns.filter(turn => turn.status === 'completed').map(turn => (
+                      <tr key={turn.id} className="border-b">
+                        <td className="py-3">{turn.name}</td>
+                        <td className="py-3">{turn.service}</td>
+                        <td className="py-3">{turn.estimatedTime} min</td>
+                        <td className="py-3">{getStatusBadge(turn.status)}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
       </div>
       
-      {/* Add Turn Dialog */}
       <Dialog open={showAddTurn} onOpenChange={setShowAddTurn}>
         <DialogContent>
           <DialogHeader>
@@ -402,7 +395,6 @@ const CurrentTurns: React.FC = () => {
         </DialogContent>
       </Dialog>
       
-      {/* Message Dialog */}
       <Dialog open={showMessageDialog} onOpenChange={setShowMessageDialog}>
         <DialogContent>
           <DialogHeader>

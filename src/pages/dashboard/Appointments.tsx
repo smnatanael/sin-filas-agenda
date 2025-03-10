@@ -8,7 +8,6 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Calendar } from '@/components/ui/calendar';
 import { useToast } from '@/hooks/use-toast';
-import Sidebar from '@/components/dashboard/Sidebar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -186,79 +185,76 @@ const Appointments: React.FC = () => {
   });
 
   return (
-    <div className="flex min-h-screen">
-      <Sidebar activeSidebarItem="citas" />
-      
-      <div className="flex-1 p-4 md:p-8 bg-gradient-to-b from-white to-sinfilas-50">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold text-gray-900">Citas</h1>
-            <Button onClick={() => setShowAddAppointment(true)} className="bg-sinfilas-600 hover:bg-sinfilas-700">
-              <Plus className="mr-2 h-4 w-4" />
-              Nueva Cita
-            </Button>
-          </div>
+    <div className="flex-1 p-4 md:p-8 bg-gradient-to-b from-white to-sinfilas-50">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold text-gray-900">Citas</h1>
+          <Button onClick={() => setShowAddAppointment(true)} className="bg-sinfilas-600 hover:bg-sinfilas-700">
+            <Plus className="mr-2 h-4 w-4" />
+            Nueva Cita
+          </Button>
+        </div>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <Card className="shadow-md lg:col-span-1">
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <CalendarIcon className="h-5 w-5 mr-2 text-sinfilas-600" />
+                Calendario
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex justify-center">
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={(date) => date && setSelectedDate(date)}
+                  className="rounded-md border w-full max-w-xs transform scale-110 mx-auto"
+                  locale={es}
+                />
+              </div>
+              
+              <div className="mt-6">
+                <h3 className="font-medium text-gray-900 mb-3">Resumen del día</h3>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Total citas:</span>
+                    <span className="text-sm font-medium">{filteredAppointments.length}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Confirmadas:</span>
+                    <span className="text-sm font-medium">
+                      {filteredAppointments.filter(a => a.status === 'confirmed').length}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Pendientes:</span>
+                    <span className="text-sm font-medium">
+                      {filteredAppointments.filter(a => a.status === 'pending').length}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
           
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-            <Card className="shadow-md lg:col-span-1">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <CalendarIcon className="h-5 w-5 mr-2 text-sinfilas-600" />
-                  Calendario
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex justify-center">
-                  <Calendar
-                    mode="single"
-                    selected={selectedDate}
-                    onSelect={(date) => date && setSelectedDate(date)}
-                    className="rounded-md border w-full max-w-xs transform scale-110 mx-auto"
-                    locale={es}
-                  />
+          <Card className="shadow-md lg:col-span-2">
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Clock className="h-5 w-5 mr-2 text-sinfilas-600" />
+                Citas para {format(selectedDate, "d 'de' MMMM", { locale: es })}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {filteredAppointments.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  No hay citas programadas para este día
                 </div>
-                
-                <div className="mt-6">
-                  <h3 className="font-medium text-gray-900 mb-3">Resumen del día</h3>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Total citas:</span>
-                      <span className="text-sm font-medium">{filteredAppointments.length}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Confirmadas:</span>
-                      <span className="text-sm font-medium">
-                        {filteredAppointments.filter(a => a.status === 'confirmed').length}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Pendientes:</span>
-                      <span className="text-sm font-medium">
-                        {filteredAppointments.filter(a => a.status === 'pending').length}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="shadow-md lg:col-span-2">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Clock className="h-5 w-5 mr-2 text-sinfilas-600" />
-                  Citas para {format(selectedDate, "d 'de' MMMM", { locale: es })}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {filteredAppointments.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
-                    No hay citas programadas para este día
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {filteredAppointments
-                      .sort((a, b) => a.date.getTime() - b.date.getTime())
-                      .map(appointment => (
+              ) : (
+                <div className="space-y-4">
+                  {filteredAppointments
+                    .sort((a, b) => a.date.getTime() - b.date.getTime())
+                    .map(appointment => (
                       <div key={appointment.id} className="p-4 border rounded-lg">
                         <div className="flex justify-between items-start mb-2">
                           <div>
@@ -313,79 +309,78 @@ const Appointments: React.FC = () => {
                         </div>
                       </div>
                     ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-          
-          <Card className="shadow-md mb-8">
-            <CardHeader>
-              <CardTitle>Próximas Citas</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full text-left">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="pb-3 text-gray-500 font-medium">Cliente</th>
-                      <th className="pb-3 text-gray-500 font-medium">Servicio</th>
-                      <th className="pb-3 text-gray-500 font-medium">Fecha</th>
-                      <th className="pb-3 text-gray-500 font-medium">Hora</th>
-                      <th className="pb-3 text-gray-500 font-medium">Estado</th>
-                      <th className="pb-3 text-gray-500 font-medium">Acciones</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {appointments
-                      .filter(a => a.date > new Date() && a.status !== 'cancelled')
-                      .sort((a, b) => a.date.getTime() - b.date.getTime())
-                      .slice(0, 5)
-                      .map(appointment => (
-                        <tr key={appointment.id} className="border-b">
-                          <td className="py-3">{appointment.customerName}</td>
-                          <td className="py-3">{appointment.service}</td>
-                          <td className="py-3">{format(appointment.date, "d MMM yyyy", { locale: es })}</td>
-                          <td className="py-3">{format(appointment.date, "h:mm a")}</td>
-                          <td className="py-3">{getStatusBadge(appointment.status)}</td>
-                          <td className="py-3">
-                            <div className="flex space-x-2">
-                              <Button 
-                                variant="ghost" 
-                                size="sm"
-                                onClick={() => handleOpenMessage(appointment)}
-                              >
-                                <MessageCircle className="h-4 w-4" />
-                              </Button>
-                              
-                              {appointment.status === 'pending' && (
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm"
-                                  className="text-green-600"
-                                  onClick={() => handleStatusChange(appointment.id, 'confirmed')}
-                                >
-                                  <Check className="h-4 w-4" />
-                                </Button>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    
-                    {appointments.filter(a => a.date > new Date() && a.status !== 'cancelled').length === 0 && (
-                      <tr>
-                        <td colSpan={6} className="py-4 text-center text-gray-500">
-                          No hay citas programadas próximamente
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
+        
+        <Card className="shadow-md mb-8">
+          <CardHeader>
+            <CardTitle>Próximas Citas</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="border-b">
+                    <th className="pb-3 text-gray-500 font-medium">Cliente</th>
+                    <th className="pb-3 text-gray-500 font-medium">Servicio</th>
+                    <th className="pb-3 text-gray-500 font-medium">Fecha</th>
+                    <th className="pb-3 text-gray-500 font-medium">Hora</th>
+                    <th className="pb-3 text-gray-500 font-medium">Estado</th>
+                    <th className="pb-3 text-gray-500 font-medium">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {appointments
+                    .filter(a => a.date > new Date() && a.status !== 'cancelled')
+                    .sort((a, b) => a.date.getTime() - b.date.getTime())
+                    .slice(0, 5)
+                    .map(appointment => (
+                      <tr key={appointment.id} className="border-b">
+                        <td className="py-3">{appointment.customerName}</td>
+                        <td className="py-3">{appointment.service}</td>
+                        <td className="py-3">{format(appointment.date, "d MMM yyyy", { locale: es })}</td>
+                        <td className="py-3">{format(appointment.date, "h:mm a")}</td>
+                        <td className="py-3">{getStatusBadge(appointment.status)}</td>
+                        <td className="py-3">
+                          <div className="flex space-x-2">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => handleOpenMessage(appointment)}
+                            >
+                              <MessageCircle className="h-4 w-4" />
+                            </Button>
+                            
+                            {appointment.status === 'pending' && (
+                              <Button 
+                                variant="ghost" 
+                                size="sm"
+                                className="text-green-600"
+                                onClick={() => handleStatusChange(appointment.id, 'confirmed')}
+                              >
+                                <Check className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  
+                  {appointments.filter(a => a.date > new Date() && a.status !== 'cancelled').length === 0 && (
+                    <tr>
+                      <td colSpan={6} className="py-4 text-center text-gray-500">
+                        No hay citas programadas próximamente
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
       </div>
       
       <Dialog open={showAddAppointment} onOpenChange={setShowAddAppointment}>
