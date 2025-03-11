@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Clock, Calendar, Menu, User, Settings, ListChecks } from 'lucide-react';
+import { Clock, Calendar, Menu, User, Settings, ListChecks, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { 
@@ -11,6 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator
 } from '@/components/ui/dropdown-menu';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 
 interface HeaderProps {
   logoUrl?: string;
@@ -28,6 +29,7 @@ const Header: React.FC<HeaderProps> = ({
   const { toast } = useToast();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isBusinessUser, setIsBusinessUser] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     // Check if user is logged in from localStorage
@@ -46,6 +48,7 @@ const Header: React.FC<HeaderProps> = ({
       title: "Citas y Turnos",
       description: "Visualizando tus citas y turnos",
     });
+    setMobileMenuOpen(false);
   };
 
   const handleViewTurns = () => {
@@ -54,6 +57,7 @@ const Header: React.FC<HeaderProps> = ({
       title: "Mis Turnos",
       description: "Visualizando tus turnos actuales",
     });
+    setMobileMenuOpen(false);
   };
 
   const handleShowHowItWorks = () => {
@@ -62,17 +66,12 @@ const Header: React.FC<HeaderProps> = ({
       title: "Cómo Funciona",
       description: "Mostrando guía de funcionamiento de SinFilas",
     });
-  };
-
-  const handleMobileMenu = () => {
-    toast({
-      title: "Menú Móvil",
-      description: "Abriendo menú de navegación",
-    });
+    setMobileMenuOpen(false);
   };
 
   const handleGoHome = () => {
     navigate('/');
+    setMobileMenuOpen(false);
   };
   
   const handleGuestNavigation = () => {
@@ -83,10 +82,12 @@ const Header: React.FC<HeaderProps> = ({
       title: "Modo Invitado",
       description: "Ahora puedes tomar turnos como invitado",
     });
+    setMobileMenuOpen(false);
   };
   
   const handleGoToDashboard = () => {
     navigate('/dashboard/home');
+    setMobileMenuOpen(false);
   };
   
   const handleLogout = () => {
@@ -98,6 +99,7 @@ const Header: React.FC<HeaderProps> = ({
       title: "Sesión cerrada",
       description: "Has cerrado sesión correctamente",
     });
+    setMobileMenuOpen(false);
   };
 
   return (
@@ -234,13 +236,140 @@ const Header: React.FC<HeaderProps> = ({
           </div>
           
           <div className="md:hidden">
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={handleMobileMenu}
-            >
-              <Menu className="h-6 w-6" />
-            </Button>
+            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                >
+                  <Menu className="h-6 w-6" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[80%] sm:w-[385px]">
+                <SheetHeader>
+                  <SheetTitle className="flex items-center">
+                    <Clock className="h-6 w-6 text-sinfilas-600 mr-2" />
+                    <span className="text-xl font-bold text-sinfilas-600">SinFilas</span>
+                  </SheetTitle>
+                </SheetHeader>
+                <div className="py-6 flex flex-col space-y-3">
+                  {isBusinessPage ? (
+                    <>
+                      <Button 
+                        variant="ghost" 
+                        className="flex items-center justify-start space-x-2"
+                        onClick={handleViewAppointments}
+                      >
+                        <Calendar className="h-4 w-4" />
+                        <span>Mis Citas</span>
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        className="flex items-center justify-start space-x-2"
+                        onClick={handleViewTurns}
+                      >
+                        <Clock className="h-4 w-4" />
+                        <span>Mis Turnos</span>
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      {isLoggedIn && (
+                        <>
+                          <Button 
+                            variant="ghost"
+                            onClick={handleViewAppointments}
+                            className="flex items-center justify-start space-x-2"
+                          >
+                            <ListChecks className="h-4 w-4" />
+                            <span>Citas y Turnos</span>
+                          </Button>
+                          
+                          {isBusinessUser && (
+                            <Button 
+                              variant="ghost"
+                              onClick={handleGoToDashboard}
+                              className="flex items-center justify-start space-x-2"
+                            >
+                              <Settings className="h-4 w-4" />
+                              <span>Mi Dashboard</span>
+                            </Button>
+                          )}
+                          <Button 
+                            variant="ghost"
+                            onClick={() => navigate('/settings')}
+                            className="flex items-center justify-start space-x-2"
+                          >
+                            <User className="h-4 w-4" />
+                            <span>Mi Perfil</span>
+                          </Button>
+                        </>
+                      )}
+                      <Button 
+                        variant="ghost"
+                        onClick={() => {
+                          navigate('/business');
+                          setMobileMenuOpen(false);
+                        }}
+                        className="flex items-center justify-start space-x-2"
+                      >
+                        Para Negocios
+                      </Button>
+                      <Button 
+                        variant="ghost"
+                        onClick={handleShowHowItWorks}
+                        className="flex items-center justify-start space-x-2"
+                      >
+                        Cómo Funciona
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        onClick={() => {
+                          navigate('/contact');
+                          setMobileMenuOpen(false);
+                        }}
+                        className="flex items-center justify-start space-x-2"
+                      >
+                        Contacto
+                      </Button>
+                      
+                      {!isLoggedIn && (
+                        <>
+                          <Button 
+                            variant="outline" 
+                            className="flex items-center justify-start space-x-2 w-full"
+                            onClick={handleGuestNavigation}
+                          >
+                            <User className="h-4 w-4" />
+                            <span>Navegar como invitado</span>
+                          </Button>
+                          <Button 
+                            variant="default" 
+                            className="bg-sinfilas-600 hover:bg-sinfilas-700 w-full"
+                            onClick={() => {
+                              navigate('/login');
+                              setMobileMenuOpen(false);
+                            }}
+                          >
+                            Iniciar Sesión
+                          </Button>
+                        </>
+                      )}
+                      
+                      {isLoggedIn && (
+                        <Button 
+                          variant="outline" 
+                          className="flex items-center justify-start space-x-2 text-red-500"
+                          onClick={handleLogout}
+                        >
+                          Cerrar Sesión
+                        </Button>
+                      )}
+                    </>
+                  )}
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </div>
