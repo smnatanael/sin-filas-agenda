@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from '@/components/dashboard/Sidebar';
-import { Menu, X } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 
@@ -14,23 +14,25 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex flex-col md:flex-row">
       {/* Desktop Sidebar */}
-      <Sidebar className="hidden md:block" />
+      <Sidebar className="hidden md:flex" />
       
-      {/* Mobile Menu Button */}
-      <div className="md:hidden fixed top-4 left-4 z-30">
-        <Button 
-          variant="outline" 
-          size="icon"
-          onClick={() => setMobileMenuOpen(true)}
-          className="bg-white shadow-md"
-        >
-          <Menu className="h-5 w-5" />
-        </Button>
+      {/* Mobile Top Bar */}
+      <div className="md:hidden flex items-center justify-between p-4 bg-white shadow-md sticky top-0 z-30">
+        <div className="flex items-center">
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={() => setMobileMenuOpen(true)}
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
+          <span className="ml-2 text-xl font-bold text-sinfilas-600">SinFilas</span>
+        </div>
       </div>
       
-      {/* Mobile Sidebar */}
+      {/* Mobile Menu */}
       <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
         <SheetContent side="left" className="p-0">
           <div className="p-4">

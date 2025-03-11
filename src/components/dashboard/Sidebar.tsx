@@ -88,7 +88,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   };
 
   return (
-    <div className={cn("glassmorphism w-64 p-4 shadow-lg h-screen", className)}>
+    <div className={cn("glassmorphism w-64 p-4 shadow-lg h-full flex flex-col", className)}>
       <div className="flex items-center justify-between mb-8">
         <button 
           onClick={() => navigate('/')} 
@@ -110,7 +110,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         )}
       </div>
       
-      <div className="space-y-2">
+      <div className="space-y-2 flex-1">
         <Button 
           variant={activeItem === "dashboard" || activeItem === "home" ? "default" : "ghost"} 
           className="w-full justify-start"
@@ -161,7 +161,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         </Button>
       </div>
       
-      <div className="absolute bottom-8 left-4 right-4">
+      <div className="mt-auto">
         <Button 
           variant="outline" 
           className="w-full justify-start text-red-500 hover:text-red-700 hover:bg-red-50"
