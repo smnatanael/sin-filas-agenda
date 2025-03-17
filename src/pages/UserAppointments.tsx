@@ -2,10 +2,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
-import Ticket from '@/components/Ticket';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CalendarCheck, ListChecks } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import AppointmentsTab from '@/components/user-appointments/AppointmentsTab';
+import TurnsTab from '@/components/user-appointments/TurnsTab';
 
 // Mock data for appointments
 const MOCK_APPOINTMENTS = [
@@ -81,52 +82,11 @@ const UserAppointments: React.FC = () => {
           </TabsList>
           
           <TabsContent value="citas">
-            {MOCK_APPOINTMENTS.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {MOCK_APPOINTMENTS.map(appointment => (
-                  <Ticket 
-                    key={appointment.id}
-                    ticketNumber={appointment.ticketNumber}
-                    businessName={appointment.businessName}
-                    businessLogo={appointment.businessLogo}
-                    date={appointment.date}
-                    time={appointment.time}
-                    status={appointment.status as any}
-                    estimatedTime={appointment.estimatedTime}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <CalendarCheck className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-                <h3 className="text-lg font-medium">No tienes citas programadas</h3>
-                <p className="text-gray-500 mt-2">Cuando reserves una cita, aparecerá aquí</p>
-              </div>
-            )}
+            <AppointmentsTab appointments={MOCK_APPOINTMENTS} />
           </TabsContent>
           
           <TabsContent value="turnos">
-            {MOCK_TURNS.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {MOCK_TURNS.map(turn => (
-                  <Ticket 
-                    key={turn.id}
-                    ticketNumber={turn.ticketNumber}
-                    businessName={turn.businessName}
-                    businessLogo={turn.businessLogo}
-                    date={turn.date}
-                    time={turn.time}
-                    status={turn.status as any}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <ListChecks className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-                <h3 className="text-lg font-medium">No tienes turnos activos</h3>
-                <p className="text-gray-500 mt-2">Cuando tomes un turno, aparecerá aquí</p>
-              </div>
-            )}
+            <TurnsTab turns={MOCK_TURNS} />
           </TabsContent>
         </Tabs>
       </main>

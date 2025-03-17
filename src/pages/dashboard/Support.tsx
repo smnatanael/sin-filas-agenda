@@ -1,13 +1,12 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { HelpCircle, FileText, MessageCircle, Search, ArrowRight } from 'lucide-react';
+import { Search, FileText, MessageCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import FAQList from '@/components/support/FAQList';
+import GuidesList from '@/components/support/GuidesList';
+import ContactForm from '@/components/support/ContactForm';
 
 const faqs = [
   {
@@ -68,11 +67,6 @@ const Support: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   
-  const filteredFaqs = faqs.filter(faq => 
-    faq.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    faq.answer.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-  
   const handleSendSupportMessage = () => {
     if (!supportMessage || !supportEmail || !supportSubject) {
       toast({
@@ -123,111 +117,28 @@ const Support: React.FC = () => {
             />
           </div>
           
-          {filteredFaqs.length > 0 ? (
-            <div className="space-y-4">
-              {filteredFaqs.map((faq, index) => (
-                <Card key={index}>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-lg flex items-center">
-                      <HelpCircle className="h-5 w-5 text-sinfilas-600 mr-2" />
-                      {faq.question}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-600">{faq.answer}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <HelpCircle className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-              <h3 className="text-lg font-medium text-gray-600">No se encontraron resultados</h3>
-              <p className="text-gray-500">Intenta con otras palabras o contacta con soporte.</p>
-              <Button 
-                className="mt-4 bg-sinfilas-600 hover:bg-sinfilas-700"
-                onClick={() => setActiveTab("contact")}
-              >
-                Contactar Soporte
-              </Button>
-            </div>
-          )}
+          <FAQList 
+            faqs={faqs} 
+            searchTerm={searchTerm} 
+            onContactSupportClick={() => setActiveTab("contact")} 
+          />
         </TabsContent>
         
         <TabsContent value="guides">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {guides.map((guide, index) => (
-              <Card key={index} className="hover:shadow-md transition-shadow cursor-pointer">
-                <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg flex items-center">
-                      <guide.icon className="h-5 w-5 text-sinfilas-600 mr-2" />
-                      {guide.title}
-                    </CardTitle>
-                    <ArrowRight className="h-5 w-5 text-gray-400" />
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600">{guide.description}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          <GuidesList guides={guides} />
         </TabsContent>
         
         <TabsContent value="contact">
-          <Card>
-            <CardHeader>
-              <CardTitle>Contactar con Soporte</CardTitle>
-              <CardDescription>
-                Envíanos un mensaje y te responderemos lo antes posible
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="support-email">Correo electrónico</Label>
-                <Input 
-                  id="support-email" 
-                  type="email" 
-                  placeholder="tu@correo.com"
-                  value={supportEmail}
-                  onChange={(e) => setSupportEmail(e.target.value)}
-                  required
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="support-subject">Asunto</Label>
-                <Input 
-                  id="support-subject" 
-                  placeholder="Asunto de tu consulta"
-                  value={supportSubject}
-                  onChange={(e) => setSupportSubject(e.target.value)}
-                  required
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="support-message">Mensaje</Label>
-                <Textarea 
-                  id="support-message" 
-                  placeholder="Describe tu problema o consulta con detalle"
-                  rows={6}
-                  value={supportMessage}
-                  onChange={(e) => setSupportMessage(e.target.value)}
-                  required
-                />
-              </div>
-              
-              <Button 
-                className="w-full bg-sinfilas-600 hover:bg-sinfilas-700"
-                onClick={handleSendSupportMessage}
-                disabled={loading}
-              >
-                {loading ? "Enviando..." : "Enviar Mensaje"}
-              </Button>
-            </CardContent>
-          </Card>
+          <ContactForm
+            supportEmail={supportEmail}
+            supportSubject={supportSubject}
+            supportMessage={supportMessage}
+            loading={loading}
+            onSupportEmailChange={setSupportEmail}
+            onSupportSubjectChange={setSupportSubject}
+            onSupportMessageChange={setSupportMessage}
+            onSendMessage={handleSendSupportMessage}
+          />
         </TabsContent>
       </Tabs>
     </div>

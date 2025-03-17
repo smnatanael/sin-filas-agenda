@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { MapPin } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { establishmentData } from '@/data/establishmentData';
 
@@ -15,6 +14,7 @@ import EstablishmentFooter from '@/components/establishment/EstablishmentFooter'
 import GuestInfoDialog from '@/components/establishment/GuestInfoDialog';
 import LoginPromptDialog from '@/components/establishment/LoginPromptDialog';
 import CancelTicketDialog from '@/components/establishment/CancelTicketDialog';
+import TicketInfo from '@/components/establishment-page/TicketInfo';
 
 const EstablishmentPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
