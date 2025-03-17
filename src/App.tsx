@@ -27,6 +27,11 @@ import AdminLayout from "./components/admin/AdminLayout";
 import AdminOverview from "./pages/admin/AdminOverview";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminBusinesses from "./pages/admin/AdminBusinesses";
+import AdminAppointments from "./pages/admin/AdminAppointments";
+import AdminNotifications from "./pages/admin/AdminNotifications";
+import AdminSecurity from "./pages/admin/AdminSecurity";
+import AdminSettings from "./pages/admin/AdminSettings";
+import AdminSupport from "./pages/admin/AdminSupport";
 
 // Mock user authentication
 export const MOCK_USERS = [
@@ -71,13 +76,12 @@ const App = () => (
             <Route path="overview" element={<AdminOverview />} />
             <Route path="users" element={<AdminUsers />} />
             <Route path="businesses" element={<AdminBusinesses />} />
-            {/* Placeholder routes for future implementation */}
             <Route path="analytics" element={<AdminOverview />} />
-            <Route path="appointments" element={<AdminOverview />} />
-            <Route path="notifications" element={<AdminOverview />} />
-            <Route path="settings" element={<AdminOverview />} />
-            <Route path="security" element={<AdminOverview />} />
-            <Route path="support" element={<AdminOverview />} />
+            <Route path="appointments" element={<AdminAppointments />} />
+            <Route path="notifications" element={<AdminNotifications />} />
+            <Route path="settings" element={<AdminSettings />} />
+            <Route path="security" element={<AdminSecurity />} />
+            <Route path="support" element={<AdminSupport />} />
           </Route>
           
           <Route path="/appointments" element={<UserAppointments />} />
