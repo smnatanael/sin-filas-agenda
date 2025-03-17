@@ -60,9 +60,18 @@ const Index: React.FC = () => {
         
         {/* Establishments section */}
         <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8">
-            {searchResults ? 'Resultados de búsqueda' : 'Establecimientos populares'}
-          </h2>
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-900">
+              {searchResults ? 'Resultados de búsqueda' : 'Establecimientos populares'}
+            </h2>
+            
+            <button 
+              onClick={() => navigate('/add-business')}
+              className="bg-sinfilas-600 hover:bg-sinfilas-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+            >
+              Registrar mi Negocio
+            </button>
+          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {establishmentsArray.map(([id, data]) => (
@@ -150,6 +159,13 @@ const Index: React.FC = () => {
                   </button>
                 </>
               )}
+              
+              <button 
+                onClick={() => navigate('/add-business')}
+                className="border border-white hover:bg-white hover:text-sinfilas-600 px-8 py-3 rounded-lg font-medium transition-colors"
+              >
+                Registrar mi Negocio
+              </button>
             </div>
           </div>
         </section>

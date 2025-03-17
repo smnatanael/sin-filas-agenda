@@ -10,6 +10,7 @@ import NotFound from "./pages/NotFound";
 import LoginPage from "./pages/LoginPage";
 import BusinessPage from "./pages/BusinessPage";
 import ContactPage from "./pages/ContactPage";
+import AddBusinessPage from "./pages/AddBusinessPage";
 import DashboardLayout from "./components/dashboard/DashboardLayout";
 import DashboardHome from "./pages/dashboard/DashboardHome";
 import CurrentTurns from "./pages/dashboard/CurrentTurns";
@@ -42,6 +43,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/establishment/:id" element={<EstablishmentPage />} />
           <Route path="/business" element={<BusinessPage />} />
+          <Route path="/add-business" element={<AddBusinessPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<LoginPage />} />
           <Route path="/contact" element={<ContactPage />} />
