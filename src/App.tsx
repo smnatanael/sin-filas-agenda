@@ -22,6 +22,12 @@ import UserAppointments from "./pages/UserAppointments";
 import UserSettings from "./pages/UserSettings";
 import MainDashboard from "./components/dashboard/MainDashboard";
 
+// Admin components
+import AdminLayout from "./components/admin/AdminLayout";
+import AdminOverview from "./pages/admin/AdminOverview";
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminBusinesses from "./pages/admin/AdminBusinesses";
+
 // Mock user authentication
 export const MOCK_USERS = [
   {
@@ -57,6 +63,21 @@ const App = () => (
             <Route path="clients" element={<Clients />} />
             <Route path="settings" element={<Settings />} />
             <Route path="support" element={<Support />} />
+          </Route>
+          
+          {/* Admin routes */}
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminOverview />} />
+            <Route path="overview" element={<AdminOverview />} />
+            <Route path="users" element={<AdminUsers />} />
+            <Route path="businesses" element={<AdminBusinesses />} />
+            {/* Placeholder routes for future implementation */}
+            <Route path="analytics" element={<AdminOverview />} />
+            <Route path="appointments" element={<AdminOverview />} />
+            <Route path="notifications" element={<AdminOverview />} />
+            <Route path="settings" element={<AdminOverview />} />
+            <Route path="security" element={<AdminOverview />} />
+            <Route path="support" element={<AdminOverview />} />
           </Route>
           
           <Route path="/appointments" element={<UserAppointments />} />
