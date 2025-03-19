@@ -1,9 +1,10 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Save } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { useToast } from '@/hooks/use-toast';
 import GeneralTab from '@/components/admin-settings/GeneralTab';
 import AppearanceTab from '@/components/admin-settings/AppearanceTab';
 import NotificationsTab from '@/components/admin-settings/NotificationsTab';
@@ -11,13 +12,29 @@ import BackupTab from '@/components/admin-settings/BackupTab';
 import AdvancedTab from '@/components/admin-settings/AdvancedTab';
 
 const AdminSettings: React.FC = () => {
+  const [saving, setSaving] = useState(false);
+  const { toast } = useToast();
+
+  const handleSaveChanges = () => {
+    setSaving(true);
+    
+    // Simulate saving
+    setTimeout(() => {
+      setSaving(false);
+      toast({
+        title: "Cambios guardados",
+        description: "La configuración del sistema ha sido actualizada correctamente",
+      });
+    }, 1500);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Configuración del Sistema</h1>
-        <Button>
+        <Button onClick={handleSaveChanges} disabled={saving}>
           <Save className="mr-2 h-4 w-4" />
-          Guardar Cambios
+          {saving ? "Guardando..." : "Guardar Cambios"}
         </Button>
       </div>
 

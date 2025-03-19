@@ -1,13 +1,36 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
-import { PaintBucket } from 'lucide-react';
+import { PaintBucket, Moon, Sun, Monitor } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const AppearanceTab: React.FC = () => {
+  const [selectedTheme, setSelectedTheme] = useState<'light' | 'dark' | 'system'>('light');
+  const [selectedColor, setSelectedColor] = useState<string>('blue');
+  const { toast } = useToast();
+
+  const handleThemeChange = (theme: 'light' | 'dark' | 'system') => {
+    setSelectedTheme(theme);
+    toast({
+      title: "Tema actualizado",
+      description: `El tema se ha cambiado a ${
+        theme === 'light' ? 'claro' : theme === 'dark' ? 'oscuro' : 'sistema'
+      }`,
+    });
+  };
+
+  const handleColorChange = (color: string) => {
+    setSelectedColor(color);
+    toast({
+      title: "Color primario actualizado",
+      description: `El color primario se ha cambiado a ${color}`,
+    });
+  };
+
   return (
     <div className="space-y-4 mt-4">
       <Card>
@@ -18,18 +41,31 @@ const AppearanceTab: React.FC = () => {
         <CardContent>
           <div className="space-y-4">
             <div className="grid grid-cols-3 gap-4">
-              <div className="border rounded-md p-4 cursor-pointer bg-white flex flex-col items-center justify-center hover:border-blue-500 relative">
-                <div className="absolute top-2 right-2 h-3 w-3 rounded-full bg-blue-500"></div>
-                <PaintBucket className="h-8 w-8 mb-2 text-gray-500" />
+              <div 
+                className={`border rounded-md p-4 cursor-pointer bg-white flex flex-col items-center justify-center hover:border-blue-500 relative ${selectedTheme === 'light' ? 'border-blue-500 ring-2 ring-blue-500' : ''}`}
+                onClick={() => handleThemeChange('light')}
+              >
+                {selectedTheme === 'light' && <div className="absolute top-2 right-2 h-3 w-3 rounded-full bg-blue-500"></div>}
+                <Sun className="h-8 w-8 mb-2 text-gray-500" />
                 <span className="text-sm">Claro</span>
               </div>
-              <div className="border rounded-md p-4 cursor-pointer bg-gray-900 flex flex-col items-center justify-center hover:border-blue-500">
-                <PaintBucket className="h-8 w-8 mb-2 text-gray-300" />
+
+              <div 
+                className={`border rounded-md p-4 cursor-pointer bg-gray-900 flex flex-col items-center justify-center hover:border-blue-500 ${selectedTheme === 'dark' ? 'border-blue-500 ring-2 ring-blue-500' : ''}`}
+                onClick={() => handleThemeChange('dark')}
+              >
+                {selectedTheme === 'dark' && <div className="absolute top-2 right-2 h-3 w-3 rounded-full bg-blue-500"></div>}
+                <Moon className="h-8 w-8 mb-2 text-gray-300" />
                 <span className="text-sm text-gray-300">Oscuro</span>
               </div>
-              <div className="border rounded-md p-4 cursor-pointer bg-gradient-to-r from-purple-500 to-blue-500 flex flex-col items-center justify-center hover:border-yellow-500">
-                <PaintBucket className="h-8 w-8 mb-2 text-white" />
-                <span className="text-sm text-white">Personalizado</span>
+
+              <div 
+                className={`border rounded-md p-4 cursor-pointer bg-gradient-to-r from-white to-gray-900 flex flex-col items-center justify-center hover:border-blue-500 ${selectedTheme === 'system' ? 'border-blue-500 ring-2 ring-blue-500' : ''}`}
+                onClick={() => handleThemeChange('system')}
+              >
+                {selectedTheme === 'system' && <div className="absolute top-2 right-2 h-3 w-3 rounded-full bg-blue-500"></div>}
+                <Monitor className="h-8 w-8 mb-2 text-gray-600" />
+                <span className="text-sm">Sistema</span>
               </div>
             </div>
             
@@ -38,12 +74,30 @@ const AppearanceTab: React.FC = () => {
             <div className="space-y-4">
               <p className="text-sm font-medium">Colores Primarios</p>
               <div className="grid grid-cols-6 gap-2">
-                <div className="h-10 rounded-md bg-blue-500 cursor-pointer"></div>
-                <div className="h-10 rounded-md bg-green-500 cursor-pointer"></div>
-                <div className="h-10 rounded-md bg-purple-500 cursor-pointer"></div>
-                <div className="h-10 rounded-md bg-red-500 cursor-pointer"></div>
-                <div className="h-10 rounded-md bg-yellow-500 cursor-pointer"></div>
-                <div className="h-10 rounded-md bg-gray-500 cursor-pointer"></div>
+                <div 
+                  className={`h-10 rounded-md bg-blue-500 cursor-pointer ${selectedColor === 'blue' ? 'ring-2 ring-offset-2 ring-blue-500' : ''}`}
+                  onClick={() => handleColorChange('blue')}
+                ></div>
+                <div 
+                  className={`h-10 rounded-md bg-green-500 cursor-pointer ${selectedColor === 'green' ? 'ring-2 ring-offset-2 ring-green-500' : ''}`}
+                  onClick={() => handleColorChange('green')}
+                ></div>
+                <div 
+                  className={`h-10 rounded-md bg-purple-500 cursor-pointer ${selectedColor === 'purple' ? 'ring-2 ring-offset-2 ring-purple-500' : ''}`}
+                  onClick={() => handleColorChange('purple')}
+                ></div>
+                <div 
+                  className={`h-10 rounded-md bg-red-500 cursor-pointer ${selectedColor === 'red' ? 'ring-2 ring-offset-2 ring-red-500' : ''}`}
+                  onClick={() => handleColorChange('red')}
+                ></div>
+                <div 
+                  className={`h-10 rounded-md bg-yellow-500 cursor-pointer ${selectedColor === 'yellow' ? 'ring-2 ring-offset-2 ring-yellow-500' : ''}`}
+                  onClick={() => handleColorChange('yellow')}
+                ></div>
+                <div 
+                  className={`h-10 rounded-md bg-gray-500 cursor-pointer ${selectedColor === 'gray' ? 'ring-2 ring-offset-2 ring-gray-500' : ''}`}
+                  onClick={() => handleColorChange('gray')}
+                ></div>
               </div>
             </div>
             
@@ -70,7 +124,7 @@ const AppearanceTab: React.FC = () => {
             <div className="space-y-2">
               <label className="text-sm font-medium">Logotipo Principal</label>
               <div className="border-2 border-dashed rounded-md p-6 flex flex-col items-center justify-center">
-                <img src="placeholder.svg" alt="Logo" className="h-12 mb-2" />
+                <img src="/placeholder.svg" alt="Logo" className="h-12 mb-2" />
                 <Button variant="outline" size="sm">Cambiar Logotipo</Button>
               </div>
             </div>
@@ -78,9 +132,13 @@ const AppearanceTab: React.FC = () => {
             <div className="space-y-2">
               <label className="text-sm font-medium">Favicon</label>
               <div className="border-2 border-dashed rounded-md p-6 flex flex-col items-center justify-center">
-                <img src="favicon.ico" alt="Favicon" className="h-8 mb-2" />
+                <img src="/placeholder.svg" alt="Favicon" className="h-8 mb-2" />
                 <Button variant="outline" size="sm">Cambiar Favicon</Button>
               </div>
+            </div>
+            
+            <div className="pt-2">
+              <Button className="w-full">Guardar cambios de apariencia</Button>
             </div>
           </div>
         </CardContent>
