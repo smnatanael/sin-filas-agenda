@@ -10,6 +10,7 @@ import AppearanceTab from '@/components/admin-settings/AppearanceTab';
 import NotificationsTab from '@/components/admin-settings/NotificationsTab';
 import BackupTab from '@/components/admin-settings/BackupTab';
 import AdvancedTab from '@/components/admin-settings/AdvancedTab';
+import { Badge } from '@/components/ui/badge';
 
 const AdminSettings: React.FC = () => {
   const [saving, setSaving] = useState(false);
@@ -48,7 +49,10 @@ const AdminSettings: React.FC = () => {
       <Tabs defaultValue="general">
         <TabsList className="grid grid-cols-5 w-full max-w-3xl">
           <TabsTrigger value="general">General</TabsTrigger>
-          <TabsTrigger value="appearance">Apariencia</TabsTrigger>
+          <TabsTrigger value="appearance">
+            Apariencia
+            <Badge variant="outline" className="ml-2 bg-blue-100 text-blue-800">Nuevo</Badge>
+          </TabsTrigger>
           <TabsTrigger value="notifications">Notificaciones</TabsTrigger>
           <TabsTrigger value="backup">Respaldos</TabsTrigger>
           <TabsTrigger value="advanced">Avanzado</TabsTrigger>

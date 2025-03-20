@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -7,14 +7,28 @@ import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { PaintBucket, Moon, Sun, Monitor } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useTheme } from 'next-themes';
 
 const AppearanceTab: React.FC = () => {
+  const { theme: currentTheme, setTheme } = useTheme();
   const [selectedTheme, setSelectedTheme] = useState<'light' | 'dark' | 'system'>('light');
   const [selectedColor, setSelectedColor] = useState<string>('blue');
+  const [isMounted, setIsMounted] = useState(false);
   const { toast } = useToast();
+
+  // Wait until mounted to avoid hydration mismatch
+  useEffect(() => {
+    setIsMounted(true);
+    // Initialize the state with the current theme from next-themes
+    if (currentTheme) {
+      setSelectedTheme(currentTheme as 'light' | 'dark' | 'system');
+    }
+  }, [currentTheme]);
 
   const handleThemeChange = (theme: 'light' | 'dark' | 'system') => {
     setSelectedTheme(theme);
+    setTheme(theme);
+    
     toast({
       title: "Tema actualizado",
       description: `El tema se ha cambiado a ${
@@ -25,11 +39,33 @@ const AppearanceTab: React.FC = () => {
 
   const handleColorChange = (color: string) => {
     setSelectedColor(color);
+    // Here we would need to update CSS variables or a color theme system
+    // For now, let's just show a toast
+    document.documentElement.style.setProperty('--primary', getColorHslValue(color));
+    
     toast({
       title: "Color primario actualizado",
       description: `El color primario se ha cambiado a ${color}`,
     });
   };
+
+  // Function to get HSL values for different colors
+  const getColorHslValue = (color: string): string => {
+    switch (color) {
+      case 'blue': return '201 94% 46%';
+      case 'green': return '142 76% 36%';
+      case 'purple': return '262 83% 58%';
+      case 'red': return '0 84% 60%';
+      case 'yellow': return '48 96% 53%';
+      case 'gray': return '220 14% 96%';
+      default: return '201 94% 46%';
+    }
+  };
+
+  // If not mounted yet, don't render to avoid hydration mismatch
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <div className="space-y-4 mt-4">
