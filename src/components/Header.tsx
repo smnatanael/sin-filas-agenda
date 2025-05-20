@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Clock, Calendar, Menu, User, Settings, ListChecks, X } from 'lucide-react';
@@ -253,6 +252,7 @@ const Header: React.FC<HeaderProps> = ({
                   </SheetTitle>
                 </SheetHeader>
                 <div className="py-6 flex flex-col space-y-3">
+                  
                   {isBusinessPage ? (
                     <>
                       <Button 
